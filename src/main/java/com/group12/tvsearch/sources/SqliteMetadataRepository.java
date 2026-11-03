@@ -1,6 +1,7 @@
 package com.group12.tvsearch.sources;
 
 import com.group12.tvsearch.model.MetadataDocument;
+import com.group12.tvsearch.model.AliasEvidence;
 import com.group12.tvsearch.model.ResultCategory;
 import com.group12.tvsearch.model.Series;
 import com.group12.tvsearch.model.SeriesAlias;
@@ -177,6 +178,39 @@ public class SqliteMetadataRepository {
             return List.copyOf(documents);
         }
     }
+
+    /** Consistent read transaction for rebuilding the in-memory index. */
+    public IndexSnapshot loadIndexSnapshot() throws SQLException {
+        try (Connection connection = open()) {
+            connection.setAutoCommit(false);
+            try {
+                List<Series> series = new ArrayList<>();
+                try (var ps = connection.prepareStatement("SELECT * FROM series ORDER BY id"); var rs = ps.executeQuery()) {
+                    while (rs.next()) series.add(readSeries(rs));
+                }
+                List<AliasEvidence> aliases = new ArrayList<>();
+                try (var ps = connection.prepareStatement("SELECT * FROM series_alias WHERE verified=1 ORDER BY series_id,locale,title");
+                        var rs = ps.executeQuery()) {
+                    while (rs.next()) aliases.add(new AliasEvidence(new SeriesAlias(rs.getLong("series_id"),
+                        rs.getString("locale"), rs.getString("title"), true), rs.getString("evidence")));
+                }
+                List<MetadataDocument> documents = new ArrayList<>();
+                try (var ps = connection.prepareStatement("SELECT * FROM document ORDER BY id"); var rs = ps.executeQuery()) {
+                    while (rs.next()) documents.add(new MetadataDocument(rs.getString("id"), rs.getLong("series_id"),
+                        rs.getString("url"), rs.getString("title"), rs.getString("body"),
+                        ResultCategory.valueOf(rs.getString("category")), rs.getString("provenance"), rs.getString("license")));
+                }
+                connection.commit();
+                return new IndexSnapshot(List.copyOf(series), List.copyOf(aliases), List.copyOf(documents));
+            } catch (SQLException | RuntimeException e) {
+                connection.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public record IndexSnapshot(List<Series> series, List<AliasEvidence> aliases,
+                                List<MetadataDocument> documents) {}
 
     /** Repeatable self-authored seed, isolated from all real-world metadata. */
     public void seedLocalDemo(LocalDocumentRepository fixtures) throws SQLException {
