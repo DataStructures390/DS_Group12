@@ -14,3 +14,5 @@
 - [ ] 不提交抓取快取、私人資料、API Key
 
 **驗收標準：** 資料來源、授權、校驗規則清楚且能由 Java 載入。
+
+- [x] P2-01：SQLite Series/Alias/Document schema、持久化 repository、transaction migration 與自寫 demo seed/reseed；51 個完整測試通過，搜尋讀取整合仍待辦
