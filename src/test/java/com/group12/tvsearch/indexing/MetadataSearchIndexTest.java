@@ -115,4 +115,43 @@ class MetadataSearchIndexTest {
         var index = new MetadataSearchIndex(new SqliteMetadataRepository(temp.resolve("empty.sqlite")));
         assertEquals("NO_RESULTS", index.search("Harbor", 10, null).status());
     }
+
+    @Test void concurrentReadersSeeOnlyCompletePublishedSnapshots() throws Exception {
+        var repo = seeded();
+        repo.saveAlias(new SeriesAlias(1, "en", "switch-title", true), "Original mapping one");
+        var started = new java.util.concurrent.CountDownLatch(1);
+        var release = new java.util.concurrent.CountDownLatch(1);
+        var controlled = new SqliteMetadataRepository(temp.resolve("metadata.sqlite")) {
+            volatile boolean pause;
+            @Override public IndexSnapshot loadIndexSnapshot() throws SQLException {
+                var complete = super.loadIndexSnapshot();
+                if (pause) {
+                    started.countDown();
+                    try {
+                        if (!release.await(5, java.util.concurrent.TimeUnit.SECONDS)) throw new SQLException("Rebuild gate timed out");
+                    } catch (InterruptedException e) { Thread.currentThread().interrupt(); throw new SQLException("Interrupted test rebuild"); }
+                }
+                return complete;
+            }
+        };
+        var index = new MetadataSearchIndex(controlled);
+        repo.saveAlias(new SeriesAlias(1, "en", "switch-title", false), "");
+        repo.saveAlias(new SeriesAlias(2, "en", "switch-title", true), "Original mapping two");
+        controlled.pause = true;
+        var executor = java.util.concurrent.Executors.newSingleThreadExecutor();
+        try {
+            var rebuilding = executor.submit(() -> { index.rebuild(); return true; });
+            assertTrue(started.await(5, java.util.concurrent.TimeUnit.SECONDS));
+            for (int i = 0; i < 20; i++) {
+                var previous = index.search("switch-title", 10, null).results();
+                assertEquals(4, previous.size());
+                assertTrue(previous.stream().allMatch(r -> r.result().url().contains("harbor-")));
+            }
+            release.countDown();
+            assertTrue(rebuilding.get(5, java.util.concurrent.TimeUnit.SECONDS));
+            var updated = index.search("switch-title", 10, null).results();
+            assertEquals(4, updated.size());
+            assertTrue(updated.stream().allMatch(r -> r.result().url().contains("garden-")));
+        } finally { release.countDown(); executor.shutdownNow(); }
+    }
 }

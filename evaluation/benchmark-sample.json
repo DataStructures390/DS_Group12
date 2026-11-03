@@ -1,0 +1,10 @@
+{"experiment":"local-synthetic-index-v1","java":"21.0.12.1","batchSize":100,"samples":11,"rows":[
+{"documents":100,"termsPerDocument":3,"query":"unique50","hits":1,"buildMillis":2.814,"indexedMedianMicros":6.769,"scanMedianMicros":2.419},
+{"documents":100,"termsPerDocument":3,"query":"term7","hits":1,"buildMillis":2.814,"indexedMedianMicros":6.309,"scanMedianMicros":1.578},
+{"documents":100,"termsPerDocument":3,"query":"absent","hits":0,"buildMillis":2.814,"indexedMedianMicros":3.797,"scanMedianMicros":1.550},
+{"documents":1000,"termsPerDocument":3,"query":"unique500","hits":1,"buildMillis":10.097,"indexedMedianMicros":2.485,"scanMedianMicros":19.427},
+{"documents":1000,"termsPerDocument":3,"query":"term7","hits":10,"buildMillis":10.097,"indexedMedianMicros":2.638,"scanMedianMicros":5.417},
+{"documents":1000,"termsPerDocument":3,"query":"absent","hits":0,"buildMillis":10.097,"indexedMedianMicros":1.913,"scanMedianMicros":5.853},
+{"documents":10000,"termsPerDocument":3,"query":"unique5000","hits":1,"buildMillis":52.372,"indexedMedianMicros":1.465,"scanMedianMicros":57.836},
+{"documents":10000,"termsPerDocument":3,"query":"term7","hits":100,"buildMillis":52.372,"indexedMedianMicros":4.499,"scanMedianMicros":63.232},
+{"documents":10000,"termsPerDocument":3,"query":"absent","hits":0,"buildMillis":52.372,"indexedMedianMicros":0.887,"scanMedianMicros":64.889}],"consumedHits":273600}

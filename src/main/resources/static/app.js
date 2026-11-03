@@ -5,6 +5,7 @@ const input = document.querySelector('#q');
 const labels = { COMMUNITY_DISCUSSION: '網友討論', SERIES_INFORMATION: '影集資訊', PROFESSIONAL_REVIEW: '專業影評', STREAMING_PLATFORM: '觀看平台' };
 let category = '';
 let activeRequest;
+let collectionExamples = [];
 function element(tag, text, className) {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;
@@ -35,7 +36,8 @@ function render(items) {
     const details = element('details');
     details.append(element('summary', `排名分數 ${item.score.toFixed(1)} / 100 · 查看依據`));
     details.append(element('p', `關鍵字 K ${r.keywordRelevance.toFixed(1)} · 影集 M ${r.seriesRelevance.toFixed(1)} · 來源 S ${r.sourceRelevance.toFixed(1)} · 日期 F ${r.freshness.toFixed(1)}`));
-    if (demo) details.append(element('p', 'K：查詢詞在文件欄位的覆蓋率；M：查詢詞在虛構劇名與示範別名的覆蓋率。S/F 缺少可靠資料，以 0 分處理；不代表來源評價低。'));
+    if (demo || r.source === 'CURATED_LOCAL') details.append(element('p',
+      `K：查詢詞在索引欄位的覆蓋率；M：查詢詞在${demo ? '虛構劇名與示範別名' : '原名與有出處別名'}的覆蓋率。S/F 缺少可靠資料，以 0 分處理；不代表來源評價低。`));
     card.append(details);
     results.append(card);
   }
@@ -57,9 +59,11 @@ async function search() {
     if (activeRequest !== request) return;
     render(data.results);
     status.textContent = `${data.results.length} 筆結果。${data.message}`;
-    if (!data.results.length) status.textContent += ' 可試試「港灣燈火」「午夜花園」或切換分類。';
+    if (!data.results.length) status.textContent += collectionExamples.length
+      ? ` 可試試 ${collectionExamples.map(q => '「' + q + '」').join('、')}，或切換分類。`
+      : ' 請檢查關鍵字或切換分類。';
   } catch (error) {
-    if (error.name !== 'AbortError') status.textContent = '搜尋失敗，請確認服務是否啟動後重試。';
+    if (activeRequest === request && error.name !== 'AbortError') status.textContent = '搜尋失敗，請確認服務是否啟動後重試。';
   } finally { if (activeRequest === request) results.setAttribute('aria-busy', 'false'); }
 }
 form.addEventListener('submit', event => { event.preventDefault(); search(); });
@@ -79,6 +83,7 @@ async function loadCollection() {
     const response = await fetch('/api/collection');
     if (!response.ok) throw new Error('Collection unavailable');
     const data = await response.json();
+    collectionExamples = data.examples;
     banner.textContent = data.message;
     examples.replaceChildren();
     if (data.examples.length) examples.append(document.createTextNode('試試：'));

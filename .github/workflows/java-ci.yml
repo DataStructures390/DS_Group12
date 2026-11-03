@@ -13,5 +13,5 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - name: Run tests
-        run: mvn -B --no-transfer-progress test
+      - name: Verify with the pinned Maven Wrapper
+        run: ./mvnw -B --no-transfer-progress verify

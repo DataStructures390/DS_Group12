@@ -109,7 +109,8 @@ class HttpTmdbClientTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"not json", "null", "[]", "{}", "{\"results\":null}", "{\"results\":[{\"name\":\"Harbor\",\"id\":-1}]}"})
+    @ValueSource(strings = {"not json", "null", "[]", "{}", "{\"results\":null}", "{\"results\":[{\"name\":\"Harbor\",\"id\":-1}]}",
+        "{\"results\":[{\"name\":\"Harbor\",\"id\":123.5}]}", "{\"results\":[null]}", "{\"results\":[{\"name\":123,\"id\":1}]}"})
     void rejectsMalformedResponses(String body) {
         searchBody = body;
         var error = assertThrows(TmdbAccessException.class, () -> client().resolveSeries("Harbor"));
@@ -166,5 +167,14 @@ class HttpTmdbClientTest {
     @Test void acceptsScriptedMiniseries() {
         detailBody = detailBody.replace("Scripted", "Miniseries");
         assertTrue(client().resolveSeries("Harbor").isPresent());
+    }
+    @ParameterizedTest
+    @ValueSource(strings = {"fractional-id", "numeric-title", "invalid-country"})
+    void rejectsMalformedDetailIdentityFields(String malformed) {
+        if (malformed.equals("fractional-id")) detailBody = detailBody.replace("\"id\":123", "\"id\":123.5");
+        if (malformed.equals("numeric-title")) detailBody = detailBody.replace("\"Fictional original\"", "123");
+        if (malformed.equals("invalid-country")) detailBody = detailBody.replace("\"US\"", "\"not-a-country\"");
+        assertEquals(TmdbAccessException.Reason.MALFORMED_RESPONSE,
+            assertThrows(TmdbAccessException.class, () -> client().resolveSeries("Harbor")).reason());
     }
 }

@@ -55,9 +55,14 @@ public class HttpTmdbClient implements TmdbClient {
         if (!rows.isArray()) throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
         Set<Long> exactIds = new LinkedHashSet<>();
         for (JsonNode row : rows) {
+            if (!row.isObject()) throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
+            for (String field : new String[]{"name", "original_name"}) {
+                if (row.hasNonNull(field) && !row.path(field).isTextual())
+                    throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
+            }
             if (query.equals(processor.normalize(row.path("name").asText("")))
                     || query.equals(processor.normalize(row.path("original_name").asText("")))) {
-                if (!row.path("id").canConvertToLong() || row.path("id").asLong() <= 0)
+                if (!row.path("id").isIntegralNumber() || !row.path("id").canConvertToLong() || row.path("id").asLong() <= 0)
                     throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
                 exactIds.add(row.path("id").asLong());
             }
@@ -66,7 +71,8 @@ public class HttpTmdbClient implements TmdbClient {
         if (exactIds.size() != 1 || search.path("total_pages").asInt(1) > 1) return Optional.empty();
         long id = exactIds.iterator().next();
         JsonNode details = get("tv/" + id + "?language=en-US");
-        if (details.path("id").asLong(-1) != id)
+        if (!details.path("id").isIntegralNumber() || !details.path("id").canConvertToLong()
+                || details.path("id").asLong(-1) != id)
             throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
         if (!Set.of("Scripted", "Miniseries").contains(details.path("type").asText())) return Optional.empty();
         JsonNode genres = details.path("genres");
@@ -78,13 +84,15 @@ public class HttpTmdbClient implements TmdbClient {
                     || name.equalsIgnoreCase("Reality") || name.equalsIgnoreCase("Talk")
                     || name.equalsIgnoreCase("News")) return Optional.empty();
         }
+        if (!details.path("original_name").isTextual()) throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
         String originalTitle = details.path("original_name").asText("");
         if (originalTitle.isBlank()) throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
         JsonNode countries = details.path("origin_country");
         if (!countries.isArray()) throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
         Set<String> origins = new LinkedHashSet<>();
         for (JsonNode country : countries) {
-            if (!country.isTextual()) throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
+            if (!country.isTextual() || !country.asText().matches("[A-Z]{2}"))
+                throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
             origins.add(country.asText());
         }
         return Optional.of(new Series(id, originalTitle, String.join(",", origins), "tmdb:tv:" + id));
