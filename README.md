@@ -7,7 +7,7 @@
 
 探索全球真人影集，以多語言名稱辨識、合法來源檢索與可解釋的排名演算法，找到真正相關的網頁。
 
-**Project Status: Specification & Planning** · **Language: Java (planned)** · **Timeline: 4–6 weeks**
+**Project Status: Stage 0 Java Scaffold** · **Language: Java (planned)** · **Timeline: 4–6 weeks**
 
 [專題規格](docs/PROJECT_SPEC.md) · [開發時程與測試](docs/ROADMAP.md) · [系統架構](#3-系統架構) · [進度看板](#7-進度看板)
 
@@ -16,8 +16,8 @@
 ---
 
 > [!IMPORTANT]
-> **目前已完成：** 專題方向、十項設計決策、架構與開發文件。  
-> **目前尚未完成：** Java 程式、外部 API 整合、搜尋網站與實測結果。  
+> **目前已新增：** 完整專題文件、Java 17/Maven/Spring Boot 骨架、倒排索引與加權排名的初版程式、JUnit 測試原始碼、GitHub Actions CI、各模組 TODO。  
+> **目前尚未完成：** 真實搜尋 API 串接、多語言影集辨識、SQLite 資料庫整合、完整前端；初版 Java 專案的 Maven 測試仍以實際 CI 結果為準。  
 > 本 README 區分「已確定需求」與「預定功能」，不將規劃當成成果。
 
 ## Contents
@@ -183,7 +183,7 @@ PTT、Dcard、Wikipedia、TMDB、Rotten Tomatoes、豆瓣與官方串流服務�
 
 | Stage | Scheduled window | Core deliverable | Acceptance gate |
 |:--|:--|:--|:--|
-| 0 — Planning | 起始階段 | 專題需求、架構、驗收計畫 | 文件完整、共識一致 |
+| 0 — Planning & Scaffold | 起始階段 | 需求文件、Java/Maven 骨架、基本單元測試 | CI／本機實際通過後才算驗收 |
 | 1 — Feasibility | 第 1 週 | Java 骨架、搜尋介面合約、Mock Adapter、來源授權調查 | Mock 能執行、來源可行性有紀錄 |
 | 2 — Metadata | 第 2 週 | TMDB 整合、SQLite、驗證的跨語言別名 | 相同影集跨語言對應正確 |
 | 3 — Local Index | 第 2～3 週 | 自建 Inverted Index 與離線搜尋 | 不連外部搜尋仍可查本地合法資料 |
@@ -202,8 +202,8 @@ PTT、Dcard、Wikipedia、TMDB、Rotten Tomatoes、豆瓣與官方串流服務�
 | 專題主題與十項方向 | 完成 | [PROJECT_SPEC](docs/PROJECT_SPEC.md) |
 | 多語言需求與搜尋規則 | 完成規劃 | [PROJECT_SPEC](docs/PROJECT_SPEC.md) |
 | 開發及測試分期 | 完成規劃 | [ROADMAP](docs/ROADMAP.md) |
-| 可編譯 Java 專案 | 待開發 | — |
-| 可運作的本地 Inverted Index | 待開發 | — |
+| Java/Maven 基礎架構 | 原始碼已上傳，編譯待驗證 | [pom.xml](pom.xml)、[src](src) |
+| 基本本地 Inverted Index | 已新增 Java 實作及測試原始碼 | [indexing](src/main/java/com/group12/tvsearch/indexing) |
 | TMDB 與外部搜尋整合 | 待開發 | — |
 | Smart Ranking 自動測試 | 待開發 | — |
 | AI Fallback 與搜尋 UI | 待開發 | — |
@@ -211,31 +211,62 @@ PTT、Dcard、Wikipedia、TMDB、Rotten Tomatoes、豆瓣與官方串流服務�
 
 ## 8. 預計的程式架構
 
-目前 Repository 只有文件；下列為**預定目錄**，不是現存檔案清單。
+已建立以下實際資料夾和檔案，並為每個主要模組加入 TODO；尚未完成的功能請依清單開發。
 
 ~~~text
 DS_Group12/
-├─ README.md
-├─ docs/
-│  ├─ PROJECT_SPEC.md
-│  └─ ROADMAP.md
-├─ pom.xml                          [planned]
-├─ src/
-│  ├─ main/java/.../tvsearch/       [planned]
-│  │  ├─ model/                     Series, SeriesAlias, SearchResult
-│  │  ├─ indexing/                  InvertedIndex, Tokenizer
-│  │  ├─ sources/                   WebSearchClient, TMDBClient
-│  │  ├─ ranking/                   RankingAlgorithm, ResultMerger
-│  │  ├─ query/                     QueryProcessor, KeywordExpander
-│  │  ├─ service/                   SearchService, AIFallbackService
-│  │  └─ controller/                SearchController
-│  ├─ main/resources/static/        [planned]
-│  └─ test/java/.../tvsearch/       [planned]
-├─ data/                            [planned, licensed/test data only]
-└─ evaluation/                      [planned]
+├── .github/workflows/          # CI 設定與 TODO
+├── .gitignore / .env.example   # 安全設定
+├── README.md / TODO.md
+├── pom.xml                     # Java 17、Spring Boot、JUnit
+├── docs/
+│   ├── PROJECT_SPEC.md
+│   ├── ROADMAP.md
+│   ├── TODO.md
+│   ├── proposal/TODO.md
+│   ├── diagrams/TODO.md
+│   └── presentation/TODO.md
+├── data/TODO.md
+├── evaluation/TODO.md
+├── notes/
+│   ├── TODO.md
+│   └── stage-reports/TEMPLATE.md, TODO.md
+└── src/
+    ├── main/java/com/group12/tvsearch/
+    │   ├── TvSearchApplication.java, TODO.md
+    │   ├── model/       # Series, SearchResult, TODO
+    │   ├── indexing/    # Tokenizer, InvertedIndex, TODO
+    │   ├── sources/     # WebSearchClient, TmdbClient, TODO
+    │   ├── ranking/     # RankingAlgorithm, ResultMerger, TODO
+    │   ├── query/       # QueryProcessor, KeywordExpander, TODO
+    │   ├── service/     # SearchService, Fallback interface, TODO
+    │   └── controller/  # SearchController, TODO
+    ├── main/resources/
+    │   ├── application.properties / TODO.md
+    │   └── static/      # index.html, CSS, JS, TODO
+    └── test/java/com/group12/tvsearch/
+        ├── indexing/, query/, ranking/, service/
+        └── TODO.md
 ~~~
 
 模組只透過明確的介面協作，可讓「搜尋來源、資料庫、排名、前端」的開發互不阻塞。Mock 與真實 API Adapter 須保持可替換。
+
+### Stage 0：本機執行
+
+需要安裝 **JDK 17+** 與 **Maven**，在 Repository 根目錄執行：
+
+    mvn test
+    mvn spring-boot:run
+
+啟動後開啟 http://localhost:8080 或查詢 http://localhost:8080/api/search?q=Breaking%20Bad。
+
+目前沒有串接實際搜尋 API，因此服務會明確返回 `NO_LIVE_SEARCH`，不會顯示假網頁。
+
+> Maven 測試的實際結果應以本機與 GitHub Actions 為準，不能因有測試檔案就宣稱已通過。
+
+### 每個模組的 TODO
+
+請從 [總 TODO](TODO.md)、[docs](docs/TODO.md)、[data](data/TODO.md)、[evaluation](evaluation/TODO.md)、[notes](notes/TODO.md) 開始，進入 Java package 後也會看到各自的 `TODO.md`。
 
 ## 9. 測試與成果衡量
 
