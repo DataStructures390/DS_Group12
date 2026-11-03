@@ -332,3 +332,7 @@ DS_Group12/
 ## Stage 1 local-search demo (2026-11-03)
 
 The local index is now connected to the service/API and category UI on the feature branch. Twelve fictional, self-authored documents have working local links and explicit LOCAL_DEMO labels. External search/TMDB/SQLite/AI remain unimplemented. See [local runbook](docs/LOCAL_DEMO.md), [execution backlog](docs/EXECUTION_BACKLOG.md), [contract](docs/LOCAL_SEARCH_CONTRACT.md), and [source policy](docs/SOURCE_POLICY.md). Earlier Stage 0 descriptions above are historical baseline statements; this section records the incremental local implementation. Use the Maven Wrapper: Windows .\mvnw.cmd test; Unix ./mvnw test. Test evidence is in [stage report](notes/stage-reports/stage0-local-search-report.md).
+
+## Checked real-series collection (2026-11-04)
+
+An opt-in SQLite-backed mode now searches three real series across verified Traditional/Simplified Chinese, English, Japanese and Korean names. Results link to checked Wikipedia views with project-authored short notes; no article bodies are copied and no live search is implied. Full local clean verify passes 118 tests. See [collection runbook and source evidence](docs/CURATED_COLLECTION.md). Earlier Stage 0/1 descriptions above are historical; external provider coverage, live TMDB verification, retries/AI and final evaluation remain incomplete.

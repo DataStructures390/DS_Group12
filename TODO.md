@@ -27,3 +27,6 @@
 證據：notes/stage-reports/stage0-local-search-report.md。原有跨語言／SQLite／外部整合／AI 的總體項目仍未完成。
 
 - [x] P2-01：SQLite 資料基礎與測試完成；尚未接入 SearchService／TMDB，詳見 docs/SQLITE_METADATA.md
+
+- [x] 已核對 3 部真實影集、五種語言／文字名稱與 15 個來源檢視連結；選配 SQLite → Index → API → UI 已連通，118 個本機測試通過
+- [ ] 擴充真實影集集合及獨立人工審查的廣泛多語品質評估；目前小樣本不代表全球涵蓋率
