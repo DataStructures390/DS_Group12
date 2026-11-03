@@ -25,3 +25,5 @@
 - [ ] 完成供應商選擇與 20 組 PTT/Dcard 真實 API 涵蓋率實驗
 
 證據：notes/stage-reports/stage0-local-search-report.md。原有跨語言／SQLite／外部整合／AI 的總體項目仍未完成。
+
+- [x] P2-01：SQLite 資料基礎與測試完成；尚未接入 SearchService／TMDB，詳見 docs/SQLITE_METADATA.md

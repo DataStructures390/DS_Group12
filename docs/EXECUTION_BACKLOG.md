@@ -18,7 +18,7 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 | P1-05 | P1 | unassigned | P1-04 | RankingAlgorithm, ResultMerger, ranking tests | Deterministic tie, conservative canonical URLs, clamp, Top-K, nonfinite features | Done; query-identity/encoding collision tests |
 | P1-06 | P1 | unassigned | P1-03, P1-05 | controllers, static UI, Wrapper; stage report | App JSON/UI returns labeled local results; tests pass; linked docs load | Done locally; browser checks recorded |
 | P1-07 | P1 | unassigned | P0-05, P1-06 | SearchService/SearchController, app.js | All + four categories, filter before Top-K, invalid value HTTP400 | Done; integration and browser verification |
-| P2-01 | P2 | unassigned | P0-05 | future database schema/repository | Persistent Series/Alias/Document, repeatable migration/seeding tests | Planned |
+| P2-01 | P2 | unassigned | P0-05 | SqliteMetadataRepository, MetadataDocument, db/V1__metadata.sql | Persistent Series/Alias/Document, repeatable migration/seeding tests | Done: 51-test suite; explicit offline seed/reseed; search integration remains separate |
 | P2-02 | P2 | unassigned | P0-04, P2-01 | TmdbClient adapter | Env-only key, TV scope filtering, timeout/invalid-key tests | Planned; no live key configured |
 | P2-03 | P2 | unassigned | P2-02 | SeriesAlias, future SeriesResolver | Verified five-language aliases resolve same canonical ID; ambiguity tests | Planned; demo aliases are fictional fixtures only |
 | P2-04 | P2 | unassigned | P0-04 | WebSearchClient adapter | Permitted live URLs, metadata, rate limits, mock error tests | Blocked: provider selection/rights/key |
@@ -38,4 +38,4 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 Windows: `.\mvnw.cmd test`, then `.\mvnw.cmd spring-boot:run`.
 Unix: `./mvnw test`, then `./mvnw spring-boot:run`.
 
-Next independent implementation: P2-01 SQLite schema/repository on a separate feature branch after reviewing the local contract. Do not mix unapproved live search into this local PR. In parallel the team can supply the actual teacher rubric and choose an authorized search plan. No teammate names or assignments are assumed.
+P2-01 now has a separate stacked feature branch; see SQLITE_METADATA.md. Next implementation: P2-02 optional TMDB adapter with mock transport tests, then P2-03 verified real aliases. Do not mix unapproved live search into this local PR. In parallel the team can supply the actual teacher rubric and choose an authorized search plan. No teammate names or assignments are assumed.
