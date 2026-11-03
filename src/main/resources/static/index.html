@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Group 12 | TV Series Search</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main>
+    <p class="eyebrow">DATA STRUCTURES / GROUP 12</p>
+    <h1>TV Series Search</h1>
+    <p class="subtitle">Smart Ranking · Multilingual TV series discovery</p>
+    <p class="warning">Stage 0 技術預覽：介面與程式骨架已建立，但尚未串接真正的影集與網頁搜尋 API。</p>
+    <form id="search-form">
+      <label for="q">輸入影集或關鍵字</label>
+      <div class="controls">
+        <input id="q" name="q" placeholder="絕命毒師、Breaking Bad" required>
+        <button type="submit">搜尋</button>
+      </div>
+    </form>
+    <section id="status" aria-live="polite">目前沒有即時網頁搜尋結果。</section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

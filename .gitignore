@@ -1,0 +1,17 @@
+target/
+*.class
+*.log
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+**/application-local.properties
+data/cache/
+data/private/
+data/*.db
+data/*.sqlite*
+evaluation/generated/

@@ -1,0 +1,12 @@
+:root{font-family:system-ui,"Noto Sans TC",sans-serif;color:#1f2e3c;background:#f5f7fa}
+*{box-sizing:border-box}
+main{max-width:850px;margin:12vh auto;padding:0 24px}
+.eyebrow{letter-spacing:.14em;color:#356f9e;font-size:.8rem;font-weight:700}
+h1{font-size:clamp(2.4rem,6vw,4.5rem);margin:.2em 0}
+.subtitle{color:#5b7083;font-size:1.2rem}
+.warning{background:#e7f0f7;border-left:4px solid #3f78a4;padding:16px;margin:32px 0;border-radius:4px}
+label{display:block;font-weight:bold;margin-bottom:8px}
+.controls{display:flex;gap:8px}
+input{flex:1;min-width:0;border:1px solid #b8c6d4;border-radius:8px;padding:14px;font-size:1rem}
+button{border:0;background:#286b9c;color:#fff;border-radius:8px;padding:12px 24px;cursor:pointer}
+#status{margin-top:28px;color:#4b6477}
