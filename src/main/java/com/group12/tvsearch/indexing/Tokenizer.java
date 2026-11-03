@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-/** Minimal English terms and CJK bigrams for Stage 0 unit testing. */
+/** NFKC words and CJK bigrams. Script transitions do not create mixed-script bigrams. */
 public final class Tokenizer {
     private Tokenizer() {}
 
@@ -16,7 +16,10 @@ public final class Tokenizer {
         String normalized = Normalizer.normalize(text, Normalizer.Form.NFKC)
                 .toLowerCase(Locale.ROOT);
         Set<String> terms = new LinkedHashSet<>();
-        for (String word : normalized.split("[^\\p{L}\\p{N}]+")) {
+        String separated = normalized.replaceAll(
+                "(?<=[\\p{IsLatin}\\p{N}])(?=[\\p{IsHan}\\p{IsHiragana}\\p{IsKatakana}\\p{IsHangul}])"
+                + "|(?<=[\\p{IsHan}\\p{IsHiragana}\\p{IsKatakana}\\p{IsHangul}])(?=[\\p{IsLatin}\\p{N}])", " ");
+        for (String word : separated.split("[^\\p{L}\\p{N}]+")) {
             if (word.isEmpty()) continue;
             terms.add(word);
             int[] cp = word.codePoints().toArray();

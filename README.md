@@ -328,3 +328,7 @@ DS_Group12/
 <div align="center">
 <sub>Group 12 · Data Structures Project · Designed for explainable, multilingual TV-series retrieval</sub>
 </div>
+
+## Stage 1 local-search demo (2026-11-03)
+
+The local index is now connected to the service/API and category UI on the feature branch. Twelve fictional, self-authored documents have working local links and explicit LOCAL_DEMO labels. External search/TMDB/SQLite/AI remain unimplemented. See [local runbook](docs/LOCAL_DEMO.md), [execution backlog](docs/EXECUTION_BACKLOG.md), [contract](docs/LOCAL_SEARCH_CONTRACT.md), and [source policy](docs/SOURCE_POLICY.md). Earlier Stage 0 descriptions above are historical baseline statements; this section records the incremental local implementation. Use the Maven Wrapper: Windows .\mvnw.cmd test; Unix ./mvnw test. Test evidence is in [stage report](notes/stage-reports/stage0-local-search-report.md).

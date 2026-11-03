@@ -6,7 +6,7 @@
 
 - [x] 實作 HashMap postings、文件新增／替換／刪除與 OR 查詢
 - [x] 新增英文與 CJK basic bigram 測試原始碼
-- [ ] 透過 Maven／CI 驗證測試實際通過
+- [x] 透過本機 Maven 驗證測試實際通過；新 PR CI 另行確認
 - [ ] 新增 AND 查詢與欄位權重、詞頻資料
 - [ ] 驗證繁簡體、日韓文斷詞及驗證別名
 - [ ] 與合法本地文件及 SQLite 連結，支援重建

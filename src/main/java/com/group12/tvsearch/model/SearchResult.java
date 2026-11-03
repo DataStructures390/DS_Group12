@@ -2,7 +2,7 @@ package com.group12.tvsearch.model;
 
 import java.util.Objects;
 
-/** Source scores are placeholders until permitted providers and features are integrated. */
+/** Normalized relevance features. Local demo computes K/M; missing source/date use zero. */
 public record SearchResult(
         String url, String title, String snippet, String source, ResultCategory category,
         double keywordRelevance, double seriesRelevance,
