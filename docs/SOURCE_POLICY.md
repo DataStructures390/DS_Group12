@@ -1,0 +1,27 @@
+# Source feasibility and usage policy
+
+Checked 2026-11-03. This is an engineering decision record, not a license grant. No accounts, subscriptions, API keys or paid calls were created. All external retrieval remains NoOp.
+
+| Source | Evidence and intended use | Storage / ranking / display decision | Cost / quota / coverage | Status and next gate |
+|---|---|---|---|---|
+| Self-authored local documents | 12 original fictional demo records in LocalDocumentRepository | Index, store, rank and display as LOCAL_DEMO; links resolve to local text pages | No API cost; 3 fictional titles, 4 categories | Enabled and tested |
+| TMDB | [Official FAQ](https://developer.themoviedb.org/docs/faq): noncommercial use with attribution; metadata identifies TV series, not forum posts | Add required logo and notice before displaying retrieved data. Do not interpret metadata access as rights to linked articles. Storage details need review of accepted API terms | FAQ describes noncommercial API access as free; key required; production quota must be checked | No key used; adapter/live verification pending |
+| Brave Search | [Terms](https://api-dashboard.search.brave.com/app/documentation/general/terms-of-service), [API plans](https://brave.com/search/api/), [web API](https://api-dashboard.search.brave.com/api-reference/web/search/get) | General terms restrict persistent result storage and derivative uses; storage-right plans exist. Goggles supports provider-side reranking. That does not settle this project's custom mixed-result ranking rights | Public page lists Search USD5/1000 requests and monthly credit; account/plan controls govern. PTT/Dcard recall unmeasured | Candidate only; confirm selected plan, display/mixing/reranking, paging limits and storage rights before integration |
+| Wikimedia / Wikipedia | [API access policy](https://www.mediawiki.org/wiki/Wikimedia_APIs/Access_policy), [content reuse](https://developer.wikimedia.org/use-content/content/) | Content licenses and attribution vary. Preserve page/revision/license provenance; review applicable license before local inclusion | API policy/rate limits apply; no budgeted calls made; forum coverage not applicable | Candidate metadata/info backup; not integrated |
+| PTT | [Official about/terms entry](https://www.ptt.cc/about.html) was discoverable but direct retrieval returned 403 | No full-text scraping, copying or indexing authorization established; keep disabled | No authorized API or cost established; search-provider coverage still unknown | Blocked on access/rights evidence; do not bypass 403 |
+| Dcard | [User agreement](https://www.dcard.tw/terms) reviewed; no grant for this project's bulk ingestion established | No direct scraper; no copied user posts; only a separately authorized search result path could be considered | No approved developer plan/quota; search coverage unknown | Pending permissions and provider coverage validation |
+| Rotten Tomatoes | [Official FAQ](https://www.rottentomatoes.com/faq); [Fandango terms](https://www.fandango.com/policies/terms-and-policies) redirected to region error | Unable to verify full applicable terms here; no scraper, copied reviews or scores | No approved plan, fee or quota established | Blocked pending accessible applicable agreement |
+| Douban | [Official legal statement](https://www.douban.com/about/legal) describes restrictions on reuse/derivative collection | Do not ingest or copy reviews/ratings without applicable permission | No approved API plan or quota established | Disabled |
+| Official streaming sites | Region-specific terms and title availability must be verified per platform | No direct ingestion or inferred availability. Fixture streaming category does not claim a real platform | No provider integration/coverage measurement | Pending source-specific permission, real title URL and region verification |
+
+## Budget and activation gates
+
+The agreed NT$300–1,000 is the whole-team project cap, not spending authorization for a new subscription. No exchange-rate conversion or billing commitment is assumed. Before live activation record account plan, current price, request ceiling, timeout, 429 handling, attribution, persistence rights and review date. Never log keys or place provider responses into fixtures without permission.
+
+## PTT/Dcard coverage experiment — prepared, not executed
+
+Use 20 queries: 5 real TV titles (Breaking Bad, Stranger Things, The Last of Us, 想見你, 魷魚遊戲), each with four variants: exact title, title + 心得, site:ptt.cc title, site:dcard.tw title. Querying a provider is distinct from fetching the returned pages.
+
+For each record provider/plan, date, query, actual result URL/domain, category, human relevance judgment, permitted snippet fields, latency, request count and cost. Do not save restricted responses. Evaluate domain recall and relevance separately; a suggested query does not count as a hit. With no configured approved provider/key, all 20 live coverage cases remain NOT RUN. A general web search performed for policy research is not evidence that the app's future API has this coverage.
+
+Fallback now: local demo only. Next: obtain the selected provider's usage confirmation and credentials through environment variables; run the 20-case experiment within its request budget. No source is approved merely because it appears in this table.

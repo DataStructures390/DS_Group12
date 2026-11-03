@@ -16,3 +16,12 @@
 - [ ] 交付 Proposal、期末報告與 Demo
 
 **驗收標準：** 每個完成項有程式碼、測試結果或文件連結作為證據。
+
+### Stage 1 local milestone
+- [x] 本地倒排索引接入 SearchService，12 筆自寫虛構文件與實際本地連結
+- [x] 本地分類、可解釋排名、去重與 API 整合測試
+- [x] Maven Wrapper 與本機執行說明
+- [x] 建立 EXECUTION_BACKLOG 與 SOURCE_POLICY 初查；外部權限未確認項目保持待辦
+- [ ] 完成供應商選擇與 20 組 PTT/Dcard 真實 API 涵蓋率實驗
+
+證據：notes/stage-reports/stage0-local-search-report.md。原有跨語言／SQLite／外部整合／AI 的總體項目仍未完成。

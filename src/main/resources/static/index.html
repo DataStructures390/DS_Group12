@@ -1,26 +1,9 @@
 <!doctype html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Group 12 | TV Series Search</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <main>
-    <p class="eyebrow">DATA STRUCTURES / GROUP 12</p>
-    <h1>TV Series Search</h1>
-    <p class="subtitle">Smart Ranking · Multilingual TV series discovery</p>
-    <p class="warning">Stage 0 技術預覽：介面與程式骨架已建立，但尚未串接真正的影集與網頁搜尋 API。</p>
-    <form id="search-form">
-      <label for="q">輸入影集或關鍵字</label>
-      <div class="controls">
-        <input id="q" name="q" placeholder="絕命毒師、Breaking Bad" required>
-        <button type="submit">搜尋</button>
-      </div>
-    </form>
-    <section id="status" aria-live="polite">目前沒有即時網頁搜尋結果。</section>
-  </main>
-  <script src="/app.js"></script>
-</body>
-</html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Group 12 | TV Series Search</title><link rel="stylesheet" href="/style.css"></head>
+<body><main><header><p class="eyebrow">DATA STRUCTURES / GROUP 12</p><h1>影集，從線索開始。</h1><p class="subtitle">TV Series Search · 本地索引與可解釋排名</p></header>
+<aside class="warning">本地搜尋展示：12 筆自寫虛構文件，不代表真實影集、影評或播放服務。尚未接上即時網頁搜尋。</aside>
+<form id="search-form"><label for="q">影集名稱或關鍵字</label><div class="controls"><input id="q" name="q" placeholder="港灣燈火、Midnight Garden、攝影" maxlength="300" required><button type="submit">搜尋</button></div></form>
+<div class="examples" aria-label="示範查詢">試試：<button type="button" data-query="港灣燈火">港灣燈火</button><button type="button" data-query="Midnight Garden">Midnight Garden</button><button type="button" data-query="山間列車">山間列車</button></div>
+<nav class="categories" aria-label="搜尋分類"><button type="button" data-category="" aria-pressed="true">全部</button><button type="button" data-category="COMMUNITY_DISCUSSION" aria-pressed="false">網友討論</button><button type="button" data-category="SERIES_INFORMATION" aria-pressed="false">影集資訊</button><button type="button" data-category="PROFESSIONAL_REVIEW" aria-pressed="false">專業影評</button><button type="button" data-category="STREAMING_PLATFORM" aria-pressed="false">觀看平台</button></nav>
+<p id="status" role="status" aria-live="polite">選擇示範查詢，開始探索本地文件。</p><section id="results" aria-label="搜尋結果" aria-busy="false"></section>
+<footer>HashMap 倒排索引 · HashSet 去重 · PriorityQueue Top-K<br>初始權重 K 45% / M 30% / S 15% / F 10%；示範來源及日期未評分。</footer></main><script src="/app.js"></script></body></html>

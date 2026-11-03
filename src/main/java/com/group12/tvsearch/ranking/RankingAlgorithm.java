@@ -18,16 +18,16 @@ public class RankingAlgorithm {
 
     public List<ScoredSearchResult> rank(List<SearchResult> candidates, int k) {
         if (k <= 0) return List.of();
-        Comparator<ScoredSearchResult> ascending = Comparator
-                .comparingDouble(ScoredSearchResult::score)
+        Comparator<ScoredSearchResult> bestFirst = Comparator
+                .comparingDouble(ScoredSearchResult::score).reversed()
                 .thenComparing(r -> r.result().url());
-        PriorityQueue<ScoredSearchResult> heap = new PriorityQueue<>(ascending);
+        PriorityQueue<ScoredSearchResult> heap = new PriorityQueue<>(bestFirst.reversed());
         for (SearchResult candidate : candidates) {
             heap.offer(new ScoredSearchResult(candidate, score(candidate)));
             if (heap.size() > k) heap.poll();
         }
         List<ScoredSearchResult> result = new ArrayList<>(heap);
-        result.sort(ascending.reversed());
+        result.sort(bestFirst);
         return result;
     }
 

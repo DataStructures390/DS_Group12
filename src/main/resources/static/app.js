@@ -1,15 +1,70 @@
-const form = document.querySelector("#search-form");
-const status = document.querySelector("#status");
-form.addEventListener("submit", async event => {
-  event.preventDefault();
-  const query = new FormData(form).get("q");
-  status.textContent = "正在查詢本地 Stage 0 API…";
+const form = document.querySelector('#search-form');
+const status = document.querySelector('#status');
+const results = document.querySelector('#results');
+const input = document.querySelector('#q');
+const labels = { COMMUNITY_DISCUSSION: '網友討論', SERIES_INFORMATION: '影集資訊', PROFESSIONAL_REVIEW: '專業影評', STREAMING_PLATFORM: '觀看平台' };
+let category = '';
+let activeRequest;
+function element(tag, text, className) {
+  const node = document.createElement(tag);
+  if (text !== undefined) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+function safeLink(result) {
   try {
-    const response = await fetch("/api/search?q=" + encodeURIComponent(query));
-    if (!response.ok) throw new Error("HTTP " + response.status);
-    const data = await response.json();
-    status.textContent = data.message || "目前沒有可驗證的搜尋結果。";
-  } catch (error) {
-    status.textContent = "連線失敗：" + error.message;
+    const url = new URL(result.url, location.origin);
+    if (result.source === 'LOCAL_DEMO') return url.origin === location.origin && /^\/demo\/documents\/[a-z0-9-]+$/.test(url.pathname) ? url.href : null;
+    return ['https:', 'http:'].includes(url.protocol) ? url.href : null;
+  } catch { return null; }
+}
+function render(items) {
+  results.replaceChildren();
+  for (const item of items) {
+    const r = item.result;
+    const card = element('article', undefined, 'result');
+    const demo = r.source === 'LOCAL_DEMO';
+    card.append(element('p', `${demo ? '本地虛構文件' : r.source} · ${labels[r.category] || r.category}`, 'meta'));
+    const heading = element('h2');
+    const href = safeLink(r);
+    const title = element(href ? 'a' : 'span', r.title);
+    if (href) title.href = href;
+    heading.append(title);
+    card.append(heading, element('p', r.snippet));
+    const details = element('details');
+    details.append(element('summary', `排名分數 ${item.score.toFixed(1)} / 100 · 查看依據`));
+    details.append(element('p', `關鍵字 K ${r.keywordRelevance.toFixed(1)} · 影集 M ${r.seriesRelevance.toFixed(1)} · 來源 S ${r.sourceRelevance.toFixed(1)} · 日期 F ${r.freshness.toFixed(1)}`));
+    if (demo) details.append(element('p', 'K：查詢詞在文件欄位的覆蓋率；M：查詢詞在虛構劇名與示範別名的覆蓋率。S/F 缺少可靠資料，以 0 分處理；不代表來源評價低。'));
+    card.append(details);
+    results.append(card);
   }
-});
+}
+async function search() {
+  activeRequest?.abort();
+  const request = new AbortController();
+  activeRequest = request;
+  results.replaceChildren();
+  if (!input.value.trim()) { status.textContent = '請輸入影集名稱或關鍵字。'; results.setAttribute('aria-busy', 'false'); return; }
+  results.setAttribute('aria-busy', 'true');
+  status.textContent = '正在搜尋本地索引…';
+  const params = new URLSearchParams({ q: input.value, limit: '10' });
+  if (category) params.set('category', category);
+  try {
+    const response = await fetch('/api/search?' + params, { signal: request.signal });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    if (activeRequest !== request) return;
+    render(data.results);
+    status.textContent = `${data.results.length} 筆結果。${data.message}`;
+    if (!data.results.length) status.textContent += ' 可試試「港灣燈火」「午夜花園」或切換分類。';
+  } catch (error) {
+    if (error.name !== 'AbortError') status.textContent = '搜尋失敗，請確認服務是否啟動後重試。';
+  } finally { if (activeRequest === request) results.setAttribute('aria-busy', 'false'); }
+}
+form.addEventListener('submit', event => { event.preventDefault(); search(); });
+document.querySelectorAll('[data-category]').forEach(button => button.addEventListener('click', () => {
+  category = button.dataset.category;
+  document.querySelectorAll('[data-category]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+  search();
+}));
+document.querySelectorAll('[data-query]').forEach(button => button.addEventListener('click', () => { input.value = button.dataset.query; search(); }));
