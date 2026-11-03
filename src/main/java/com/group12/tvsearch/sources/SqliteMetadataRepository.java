@@ -212,6 +212,26 @@ public class SqliteMetadataRepository {
     public record IndexSnapshot(List<Series> series, List<AliasEvidence> aliases,
                                 List<MetadataDocument> documents) {}
 
+    /** One-time catalog import into an EMPTY database; never overwrite existing contributor data. */
+    public void seedCuratedCatalog(CuratedCatalog catalog) throws SQLException {
+        try (Connection connection = open()) {
+            connection.setAutoCommit(false);
+            try {
+                try (var ps = connection.prepareStatement("SELECT COUNT(*) FROM series"); var rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) != 0) throw new SQLException("Curated import requires an empty database");
+                }
+                var snapshot = catalog.snapshot();
+                for (var series : snapshot.series()) saveSeries(connection, series, true);
+                for (var alias : snapshot.aliases()) saveAlias(connection, alias.alias(), alias.evidence());
+                for (var document : snapshot.documents()) saveDocument(connection, document);
+                connection.commit();
+            } catch (SQLException | RuntimeException e) {
+                connection.rollback();
+                throw e;
+            }
+        }
+    }
+
     /** Repeatable self-authored seed, isolated from all real-world metadata. */
     public void seedLocalDemo(LocalDocumentRepository fixtures) throws SQLException {
         try (Connection connection = open()) {

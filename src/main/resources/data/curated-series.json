@@ -1,0 +1,38 @@
+{
+  "checkedOn": "2026-11-04",
+  "series": [
+    {
+      "id": 100001, "originalTitle": "Breaking Bad", "country": "US",
+      "summary": "人工整理的美國真人劇情影集資訊入口。這段導覽文字由本組自寫，完整條目請閱讀來源頁面。",
+      "aliases": [
+        {"locale":"en","title":"Breaking Bad","url":"https://en.wikipedia.org/wiki/Breaking_Bad"},
+        {"locale":"zh-Hant","title":"絕命毒師","url":"https://zh.wikipedia.org/zh-tw/绝命毒师"},
+        {"locale":"zh-Hans","title":"绝命毒师","url":"https://zh.wikipedia.org/zh-cn/绝命毒师"},
+        {"locale":"ja","title":"ブレイキング・バッド","url":"https://ja.wikipedia.org/wiki/ブレイキング・バッド"},
+        {"locale":"ko","title":"브레이킹 배드","url":"https://ko.wikipedia.org/wiki/브레이킹_배드"}
+      ]
+    },
+    {
+      "id": 100002, "originalTitle": "Stranger Things", "country": "US",
+      "summary": "人工整理的美國真人劇情影集資訊入口。這段導覽文字由本組自寫，完整條目請閱讀來源頁面。",
+      "aliases": [
+        {"locale":"en","title":"Stranger Things","url":"https://en.wikipedia.org/wiki/Stranger_Things"},
+        {"locale":"zh-Hant","title":"怪奇物語","url":"https://zh.wikipedia.org/zh-tw/怪奇物语"},
+        {"locale":"zh-Hans","title":"怪奇物语","url":"https://zh.wikipedia.org/zh-cn/怪奇物语"},
+        {"locale":"ja","title":"ストレンジャー・シングス 未知の世界","url":"https://ja.wikipedia.org/wiki/ストレンジャー・シングス_未知の世界"},
+        {"locale":"ko","title":"기묘한 이야기","url":"https://ko.wikipedia.org/wiki/기묘한_이야기_(미국의_드라마)"}
+      ]
+    },
+    {
+      "id": 100003, "originalTitle": "Dark", "country": "DE",
+      "summary": "人工整理的德國真人劇情影集資訊入口。這段導覽文字由本組自寫，完整條目請閱讀來源頁面。",
+      "aliases": [
+        {"locale":"en","title":"Dark","url":"https://en.wikipedia.org/wiki/Dark_(TV_series)"},
+        {"locale":"zh-Hant","title":"闇","url":"https://zh.wikipedia.org/zh-tw/闇"},
+        {"locale":"zh-Hans","title":"暗黑","url":"https://zh.wikipedia.org/zh-cn/闇"},
+        {"locale":"ja","title":"ダーク","url":"https://ja.wikipedia.org/wiki/ダーク_(テレビドラマ)"},
+        {"locale":"ko","title":"다크","url":"https://ko.wikipedia.org/wiki/다크_(드라마)"}
+      ]
+    }
+  ]
+}

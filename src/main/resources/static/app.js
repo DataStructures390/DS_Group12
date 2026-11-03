@@ -24,7 +24,8 @@ function render(items) {
     const r = item.result;
     const card = element('article', undefined, 'result');
     const demo = r.source === 'LOCAL_DEMO';
-    card.append(element('p', `${demo ? '本地虛構文件' : r.source} · ${labels[r.category] || r.category}`, 'meta'));
+    const sourceLabel = demo ? '本地虛構文件' : r.source === 'CURATED_LOCAL' ? '人工核對 Wikipedia 連結' : r.source;
+    card.append(element('p', `${sourceLabel} · ${labels[r.category] || r.category}`, 'meta'));
     const heading = element('h2');
     const href = safeLink(r);
     const title = element(href ? 'a' : 'span', r.title);
@@ -67,4 +68,25 @@ document.querySelectorAll('[data-category]').forEach(button => button.addEventLi
   document.querySelectorAll('[data-category]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
   search();
 }));
-document.querySelectorAll('[data-query]').forEach(button => button.addEventListener('click', () => { input.value = button.dataset.query; search(); }));
+const examples = document.querySelector('.examples');
+examples.addEventListener('click', event => {
+  const button = event.target.closest('[data-query]');
+  if (button && examples.contains(button)) { input.value = button.dataset.query; search(); }
+});
+async function loadCollection() {
+  const banner = document.querySelector('#collection-info');
+  try {
+    const response = await fetch('/api/collection');
+    if (!response.ok) throw new Error('Collection unavailable');
+    const data = await response.json();
+    banner.textContent = data.message;
+    examples.replaceChildren();
+    if (data.examples.length) examples.append(document.createTextNode('試試：'));
+    for (const query of data.examples) {
+      const button = element('button', query);
+      button.type = 'button'; button.dataset.query = query;
+      examples.append(button);
+    }
+  } catch { banner.textContent = '無法讀取資料集設定；請依搜尋結果的來源標記判讀，或重新整理頁面。'; }
+}
+loadCollection();
