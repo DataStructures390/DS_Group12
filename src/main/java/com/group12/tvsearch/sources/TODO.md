@@ -13,3 +13,6 @@
 - [ ] 增加 Mock Adapter，避免單元測試依賴外部網路
 
 **驗收標準：** 確實獲准搜尋的來源可回傳真實 URL，且具可靠錯誤處理。
+
+- [x] P2-02 groundwork：選配 TMDB HTTP adapter／NoOp／安全錯誤與本機模擬測試；85 個完整測試通過
+- [ ] P2-02 live：真實授權憑證 smoke test、實際回應／類型規則查核與 TMDB attribution 展示
