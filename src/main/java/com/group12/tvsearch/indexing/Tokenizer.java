@@ -6,9 +6,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /** NFKC words and CJK bigrams. Script transitions do not create mixed-script bigrams. */
 public final class Tokenizer {
+    private static final Pattern SCRIPT_BOUNDARY = Pattern.compile(
+            "(?<=[\\p{IsLatin}\\p{N}])(?=[\\p{IsHan}\\p{IsHiragana}\\p{IsKatakana}\\p{IsHangul}])"
+            + "|(?<=[\\p{IsHan}\\p{IsHiragana}\\p{IsKatakana}\\p{IsHangul}])(?=[\\p{IsLatin}\\p{N}])");
+    private static final Pattern SEPARATORS = Pattern.compile("[^\\p{L}\\p{N}]+");
     private Tokenizer() {}
 
     public static List<String> tokens(String text) {
@@ -16,10 +21,8 @@ public final class Tokenizer {
         String normalized = Normalizer.normalize(text, Normalizer.Form.NFKC)
                 .toLowerCase(Locale.ROOT);
         Set<String> terms = new LinkedHashSet<>();
-        String separated = normalized.replaceAll(
-                "(?<=[\\p{IsLatin}\\p{N}])(?=[\\p{IsHan}\\p{IsHiragana}\\p{IsKatakana}\\p{IsHangul}])"
-                + "|(?<=[\\p{IsHan}\\p{IsHiragana}\\p{IsKatakana}\\p{IsHangul}])(?=[\\p{IsLatin}\\p{N}])", " ");
-        for (String word : separated.split("[^\\p{L}\\p{N}]+")) {
+        String separated = SCRIPT_BOUNDARY.matcher(normalized).replaceAll(" ");
+        for (String word : SEPARATORS.split(separated)) {
             if (word.isEmpty()) continue;
             terms.add(word);
             int[] cp = word.codePoints().toArray();
