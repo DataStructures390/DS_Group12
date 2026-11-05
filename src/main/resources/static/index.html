@@ -1,9 +1,11 @@
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Group 12 | TV Series Search</title><link rel="stylesheet" href="/style.css"></head>
-<body><main><header><p class="eyebrow">DATA STRUCTURES / GROUP 12</p><h1>影集，從線索開始。</h1><p class="subtitle">TV Series Search · 本地索引與可解釋排名</p></header>
-<aside id="collection-info" class="warning" aria-live="polite">正在讀取本地資料集設定…</aside>
-<form id="search-form"><label for="q">影集名稱或關鍵字</label><div class="controls"><input id="q" name="q" placeholder="影集名稱、別名或關鍵字" maxlength="300" required><button type="submit">搜尋</button></div></form>
-<div class="examples" aria-label="示範查詢"></div>
-<nav class="categories" aria-label="搜尋分類"><button type="button" data-category="" aria-pressed="true">全部</button><button type="button" data-category="COMMUNITY_DISCUSSION" aria-pressed="false">網友討論</button><button type="button" data-category="SERIES_INFORMATION" aria-pressed="false">影集資訊</button><button type="button" data-category="PROFESSIONAL_REVIEW" aria-pressed="false">專業影評</button><button type="button" data-category="STREAMING_PLATFORM" aria-pressed="false">觀看平台</button></nav>
-<p id="status" role="status" aria-live="polite">選擇示範查詢，開始探索本地文件。</p><section id="results" aria-label="搜尋結果" aria-busy="false"></section>
-<footer>HashMap 倒排索引 · HashSet 去重 · PriorityQueue Top-K<br>初始權重 K 45% / M 30% / S 15% / F 10%；示範來源及日期未評分。</footer></main><script src="/app.js"></script></body></html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SceneAtlas | 影集搜尋</title><link rel="stylesheet" href="/style.css"></head>
+<body><header class="topbar"><a href="/" class="home-link">SceneAtlas<span>Series Search</span></a><span class="project-label">GROUP 12</span></header>
+<main><section class="search-area" aria-label="影集搜尋">
+<div class="intro"><p class="eyebrow">找到下一段好故事</p><h1>Scene<span>Atlas</span><i aria-hidden="true">.</i></h1><p class="subtitle">從一個劇名，找到你想知道的。</p></div>
+<form id="search-form" role="search"><label class="sr-only" for="q">影集名稱、別名或關鍵字</label><div class="controls"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4 4"></path></svg><input id="q" name="q" placeholder="搜尋影集名稱、別名或關鍵字" maxlength="300" autocomplete="off" enterkeyhint="search" required><button type="submit">搜尋</button></div></form>
+<div class="examples" aria-label="試試這些影集"></div></section>
+<div class="search-content"><nav class="categories" aria-label="搜尋分類"><button type="button" data-category="" aria-pressed="true">全部</button><button type="button" data-category="SERIES_INFORMATION" aria-pressed="false">影集資訊</button><button type="button" data-category="COMMUNITY_DISCUSSION" aria-pressed="false">網友討論</button><button type="button" data-category="PROFESSIONAL_REVIEW" aria-pressed="false">專業影評</button><button type="button" data-category="STREAMING_PLATFORM" aria-pressed="false">觀看平台</button></nav>
+<section id="series-info" aria-label="影集資訊" aria-live="polite" hidden></section>
+<p id="status" role="status" aria-live="polite"></p><section id="results" aria-label="搜尋結果" aria-busy="false"></section></div></main>
+<footer><div><span>SceneAtlas · Group 12</span><section class="credits" aria-label="資料來源與致謝"><a href="https://www.themoviedb.org"><img src="/assets/tmdb.svg" alt="TMDB" width="78" height="11"></a><p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p></section></div><details class="collection-details"><summary>關於搜尋資料</summary><p id="collection-info">正在讀取資料集設定…</p><p>網頁結果目前使用本地索引；影集資訊區於啟用時另外查詢 TMDB。各分類的資料覆蓋可能不同。</p></details></footer><script src="/app.js"></script></body></html>
