@@ -89,6 +89,11 @@ public class HttpTmdbClient implements TmdbClient {
         // A remake/title collision or truncated result set is not a verified identity.
         if (exactIds.size() != 1 || search.path("total_pages").asInt(1) > 1) return Optional.empty();
         long id = exactIds.iterator().next();
+        return resolveSeriesById(id);
+    }
+
+    @Override public Optional<Series> resolveSeriesById(long id) {
+        if (id <= 0) throw new IllegalArgumentException("A positive TMDB TV ID is required");
         JsonNode details = get("tv/" + id + "?language=en-US");
         if (!details.path("id").isIntegralNumber() || !details.path("id").canConvertToLong()
                 || details.path("id").asLong(-1) != id)

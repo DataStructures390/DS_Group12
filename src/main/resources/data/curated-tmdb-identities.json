@@ -1,0 +1,8 @@
+{
+  "checkedOn": "2026-11-06",
+  "identities": [
+    {"localSeriesId": 100001, "tmdbId": 1396, "source": "https://www.themoviedb.org/tv/1396"},
+    {"localSeriesId": 100002, "tmdbId": 66732, "source": "https://www.themoviedb.org/tv/66732-stranger-things"},
+    {"localSeriesId": 100003, "tmdbId": 70523, "source": "https://www.themoviedb.org/tv/70523-dark"}
+  ]
+}

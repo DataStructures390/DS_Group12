@@ -71,6 +71,28 @@ class HttpTmdbClientTest {
     }
     private HttpTmdbClient client() { return client(Duration.ofSeconds(2)); }
 
+    @Test void checkedIdUsesOneScopeValidatedDetailsRequest() {
+        assertEquals(123, client().resolveSeriesById(123).orElseThrow().id());
+        assertEquals(1, requests.get());
+        assertEquals("Bearer " + TEST_TOKEN, authorization.get());
+        assertEquals("language=en-US", lastQuery.get());
+    }
+
+    @Test void invalidCheckedIdMakesNoRequest() {
+        assertThrows(IllegalArgumentException.class, () -> client().resolveSeriesById(0));
+        assertThrows(IllegalArgumentException.class, () -> client().resolveSeriesById(-1));
+        assertTrue(new NoOpTmdbClient().resolveSeriesById(123).isEmpty());
+        assertEquals(0, requests.get());
+    }
+
+    @Test void checkedIdStillRejectsWrongIdentityAndAnimation() {
+        detailBody = detailBody.replace("\"id\":123", "\"id\":999");
+        assertEquals(TmdbAccessException.Reason.MALFORMED_RESPONSE,
+                assertThrows(TmdbAccessException.class, () -> client().resolveSeriesById(123)).reason());
+        detailBody = detailBody.replace("\"id\":999", "\"id\":123").replace("Drama", "Animation");
+        assertTrue(client().resolveSeriesById(123).isEmpty());
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"Harbor Lights", "港灣燈火", "港湾灯火", "ハーバーライト", "항구의 빛"})
     void languageDoesNotRestrictOriginCountry(String title) {

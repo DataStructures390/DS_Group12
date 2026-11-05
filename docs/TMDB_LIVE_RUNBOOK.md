@@ -34,8 +34,12 @@ No global per-account quota or deployment authentication has been added; this re
 
 User selected a separate metadata panel on 2026-11-06.
 No poster, synopsis, rating, inferred streaming availability or metadata persistence is added.
-The conservative existing exact English/original-title resolver can miss translated titles and ambiguous remakes.
-Verified multilingual API resolution remains separate work.
+For the three curated series, the 15 evidenced language/variant names use separately checked TV IDs
+from data/curated-tmdb-identities.json. Each request fetches one TV detail response, validates scope,
+and confirms the expected original title and country before returning metadata. Local IDs are not TMDB IDs.
+Alias collisions return UNCONFIRMED without network calls. Unrecognized queries retain the conservative
+existing exact-title search (at most two requests); it can miss translated titles and ambiguous remakes.
+This is bounded curated coverage, not universal multilingual search. No automatic translation or new persistence is added.
 
 Official logo downloaded unchanged from:
 https://www.themoviedb.org/assets/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg

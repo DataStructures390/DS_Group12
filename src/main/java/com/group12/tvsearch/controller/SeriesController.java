@@ -2,6 +2,9 @@ package com.group12.tvsearch.controller;
 
 import com.group12.tvsearch.sources.TmdbAccessException;
 import com.group12.tvsearch.sources.TmdbClient;
+import com.group12.tvsearch.sources.VerifiedSeriesResolver;
+import com.group12.tvsearch.model.Series;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,13 +14,20 @@ import java.util.concurrent.Semaphore;
 /** Metadata is separate from ranked webpage results and is never persisted here. */
 @RestController
 public class SeriesController {
-    private final TmdbClient client;
+    private final java.util.function.Function<String, java.util.Optional<Series>> resolver;
     private final boolean enabled;
     private final Semaphore inFlight = new Semaphore(1);
 
-    public SeriesController(TmdbClient client,
+    @Autowired
+    public SeriesController(VerifiedSeriesResolver resolver,
             @Value("${metadata.tmdb.enabled:false}") boolean enabled) {
-        this.client = client;
+        this.resolver = resolver::resolve;
+        this.enabled = enabled;
+    }
+
+    /** Standalone endpoint tests can still supply a controlled client. */
+    public SeriesController(TmdbClient client, boolean enabled) {
+        this.resolver = client::resolveSeries;
         this.enabled = enabled;
     }
 
@@ -30,7 +40,7 @@ public class SeriesController {
         if (!enabled) return state("DISABLED");
         if (!inFlight.tryAcquire()) return state("BUSY");
         try {
-            return client.resolveSeries(q).map(series -> new SeriesResponse("FOUND",
+            return resolver.apply(q).map(series -> new SeriesResponse("FOUND",
                     series.originalTitle(), series.originCountry(),
                     "https://www.themoviedb.org/tv/" + series.id()))
                     .orElseGet(() -> state("UNCONFIRMED"));

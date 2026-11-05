@@ -35,6 +35,12 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 
 ## Next commands
 
+### 2026-11-06 multilingual increment
+
+- P2-03 / P3-03: three curated series now have separately evidenced TMDB TV ID mappings and 15 language/variant names in VerifiedSeriesResolver. Alias HashMap collisions produce no network request; live scope/title/country validation remains mandatory. 163 local tests pass; new live multilingual path pending credential-bearing restart.
+- P0-02 / collaboration: detailed four-person suggestions, templates, relative schedule and acceptance criteria published in docs/TEAM_WORKPLAN.md (PR #9). Roles A/B/C remain unclaimed.
+- Remaining: broader evidenced catalog and general multilingual resolution, approved web-search service and teacher rubric. These are not marked complete by the bounded sample.
+
 ### 2026-11-06 verified increment
 
 - P2-02: 139 tests pass. User reported packaged Java live verification SUCCESS / TV_ID 1396. Separate GET /api/series now returns verified title/origin/link or safe failure states; no persistence or retries. Browser live FOUND verification passed with Breaking Bad / US / TV link 1396 and five local results.
