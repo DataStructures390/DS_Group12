@@ -35,6 +35,12 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 
 ## Next commands
 
+### 2026-11-06 verified increment
+
+- P2-02: 139 tests pass. User reported packaged Java live verification SUCCESS / TV_ID 1396. Separate GET /api/series now returns verified title/origin/link or safe failure states; no persistence or retries. Browser live FOUND verification passed with Breaking Bad / US / TV link 1396 and five local results.
+- P3-05: SceneAtlas minimal light interface and independent metadata panel implemented, per user's chosen layout. Offline browser verification preserves five local results while TMDB is disabled. Category changes reuse metadata instead of issuing extra requests. Official TMDB logo and notice added.
+- Owner remains unassigned. Next: follow TMDB_LIVE_RUNBOOK.md in the same credential-bearing terminal, verify live panel, then implement verified multilingual identity resolution. Web Search provider selection and teacher rubric remain unresolved; ask user before making those choices.
+
 Windows: `.\mvnw.cmd test`, then `.\mvnw.cmd spring-boot:run`.
 Unix: `./mvnw test`, then `./mvnw spring-boot:run`.
 

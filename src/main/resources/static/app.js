@@ -43,13 +43,54 @@ function render(items) {
     results.append(card);
   }
 }
-async function search(query = input.value.trim()) {
+let metadataRequest;
+async function loadSeries(query) {
+  metadataRequest?.abort();
+  const request = new AbortController();
+  metadataRequest = request;
+  const panel = document.querySelector('#series-info');
+  panel.hidden = false;
+  panel.replaceChildren(element('p', '正在確認影集資訊…', 'meta'));
+  panel.setAttribute('aria-busy', 'true');
+  try {
+    const response = await fetch('/api/series?' + new URLSearchParams({q: query}), {signal: request.signal});
+    if (!response.ok) throw new Error('Metadata unavailable');
+    const data = await response.json();
+    if (metadataRequest !== request) return;
+    panel.replaceChildren(element('p', '影集資訊 · TMDB', 'meta'));
+    if (data.status === 'FOUND') {
+      panel.append(element('h2', data.title), element('p', '製作國家／地區：' + (data.originCountry || '未提供')));
+      const url = new URL(data.url);
+      if (url.origin === 'https://www.themoviedb.org' && /^\/tv\/[1-9][0-9]*$/.test(url.pathname)) {
+        const link = element('a', '在 TMDB 查看影集 →');
+        link.href = url.href;
+        panel.append(link);
+      }
+    } else {
+      const messages = {
+        DISABLED: '目前未啟用即時影集資訊，下方仍可搜尋本地資料。',
+        UNCONFIRMED: '尚未確認唯一且符合範圍的影集。可試試完整原文劇名；下方結果仍可查看。',
+        AUTHENTICATION: 'TMDB 憑證未通過驗證，請檢查伺服器設定。',
+        RATE_LIMITED: 'TMDB 請求次數已達限制，請稍後再試。',
+        BUSY: '影集查詢處理中，請稍後重新搜尋。',
+        QUERY_TOO_LONG: '請使用 300 字以內的影集名稱。'
+      };
+      panel.append(element('p', messages[data.status] || '暫時無法取得影集資訊，下方搜尋不受影響。'));
+    }
+  } catch (error) {
+    if (metadataRequest === request && error.name !== 'AbortError')
+      panel.replaceChildren(element('p', '暫時無法取得影集資訊，下方搜尋不受影響。'));
+  } finally { if (metadataRequest === request) panel.setAttribute('aria-busy', 'false'); }
+}
+async function search(query = input.value.trim(), refreshMetadata = true) {
   activeRequest?.abort();
   const request = new AbortController();
   activeRequest = request;
   results.replaceChildren();
   if (!query) { status.textContent = '請輸入影集名稱或關鍵字。'; results.setAttribute('aria-busy', 'false'); return; }
   submittedQuery = query;
+  document.body.classList.add('has-searched');
+  if (refreshMetadata) loadSeries(query);
   results.setAttribute('aria-busy', 'true');
   status.textContent = '正在搜尋本地索引…';
   const params = new URLSearchParams({ q: query, limit: '10' });
@@ -77,7 +118,7 @@ form.addEventListener('submit', event => { event.preventDefault(); search(); });
 document.querySelectorAll('[data-category]').forEach(button => button.addEventListener('click', () => {
   category = button.dataset.category;
   document.querySelectorAll('[data-category]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
-  if (submittedQuery) search(submittedQuery);
+  if (submittedQuery) search(submittedQuery, false);
 }));
 const examples = document.querySelector('.examples');
 examples.addEventListener('click', event => {
