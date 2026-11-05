@@ -19,7 +19,7 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 | P1-06 | P1 | unassigned | P1-03, P1-05 | controllers, static UI, Wrapper; stage report | App JSON/UI returns labeled local results; tests pass; linked docs load | Done locally; browser checks recorded |
 | P1-07 | P1 | unassigned | P0-05, P1-06 | SearchService/SearchController, app.js | All + four categories, filter before Top-K, invalid value HTTP400 | Done; integration and browser verification |
 | P2-01 | P2 | unassigned | P0-05 | SqliteMetadataRepository, MetadataDocument, db/V1__metadata.sql | Persistent Series/Alias/Document, repeatable migration/seeding tests | Done: 51-test suite; explicit offline seed/reseed; search integration remains separate |
-| P2-02 | P2 | unassigned | P0-04, P2-01 | HttpTmdbClient, TmdbConfiguration, TMDB_ADAPTER.md | Env-only token, TV scope filtering, timeout/invalid-key tests | Partial: adapter/mock transport complete, 85 tests pass; live smoke and attribution/display pending |
+| P2-02 | P2 | unassigned | P0-04, P2-01 | HttpTmdbClient, TmdbConfiguration, TMDB_ADAPTER.md | Env-only token, TV scope filtering, timeout/invalid-key tests | Partial: token and API-key adapters tested in 131-test suite on 2026-11-05; live smoke and attribution/display pending |
 | P2-03 | P2 | unassigned | P2-02 | SeriesAlias, AliasEvidence, MetadataSearchIndex | Verified five-language aliases resolve same canonical ID; ambiguity tests | Partial: persisted verified-alias index/collision logic tested with synthetic five-language fixtures; bounded real-source sample now in CURATED_COLLECTION.md: 3 real titles, 15 evidenced language views; broad coverage pending |
 | P2-04 | P2 | unassigned | P0-04 | WebSearchClient adapter | Permitted live URLs, metadata, rate limits, mock error tests | Blocked: provider selection/rights/key |
 | P2-05 | P2 | unassigned | P1-06, P2-04 | service/merger/model provenance | Merge permitted live/local candidates preserving provenance and rights; mock tests | Planned |
@@ -29,7 +29,7 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 | P3-02 | P3 | unassigned | P3-01 | AiFallbackService adapter | Optional candidate terms only, request/token budget, validation and timeout tests | Planned |
 | P3-03 | P3 | unassigned | P2-03 | evaluation cases | Reviewed cross-country five-language canonical-ID cases | Planned; local regression is not this evaluation |
 | P3-04 | P3 | unassigned | P2-05 | evaluation/report | Human-labeled live ground truth, Precision@5/hit/no-result metrics | Planned; no fabricated metric |
-| P3-05 | P3 | unassigned | P1-07 | static UI | Loading/error/empty, responsive and keyboard; actual browser checks | Partial: basic states/mobile/keyboard completed; full accessibility audit pending |
+| P3-05 | P3 | unassigned | P1-07 | static UI | Loading/error/empty, responsive and keyboard; actual browser checks | Partial: dark responsive interface and empty-category recovery verified 2026-11-05; full accessibility audit pending |
 | P3-06 | P3 | unassigned | P0-03, P3-04 | future LLM comparison | Same query set, disclosed method and measured comparison | Conditional |
 | P3-07 | P3 | unassigned | P3-04 | final report/demo | Reproducible runbook, actual screenshots, limitations, costs | Stage 1 report/runbook done; final project report planned |
 

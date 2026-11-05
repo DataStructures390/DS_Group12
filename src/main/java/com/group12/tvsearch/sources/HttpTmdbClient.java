@@ -22,20 +22,36 @@ public class HttpTmdbClient implements TmdbClient {
     private final HttpClient http;
     private final URI base;
     private final String token;
+    private final String apiKey;
     private final Duration timeout;
     private final ObjectMapper mapper = new ObjectMapper();
     private final QueryProcessor processor = new QueryProcessor();
 
     public HttpTmdbClient(String readAccessToken) {
+        this(readAccessToken, "");
+    }
+
+    public HttpTmdbClient(String readAccessToken, String apiKey) {
         this(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3))
             .followRedirects(HttpClient.Redirect.NEVER).build(), URI.create("https://api.themoviedb.org/3/"),
-            readAccessToken, Duration.ofSeconds(5));
+            readAccessToken, apiKey, Duration.ofSeconds(5));
     }
 
     /** Alternate base is for controlled local transport tests, never a user-supplied URL. */
     public HttpTmdbClient(HttpClient http, URI base, String token, Duration timeout) {
-        if (token == null || !token.matches("[A-Za-z0-9._~+/=-]+"))
-            throw new IllegalArgumentException("A TMDB read access token is required");
+        this(http, base, token, "", timeout);
+    }
+
+    public HttpTmdbClient(HttpClient http, URI base, String token, String apiKey, Duration timeout) {
+        String selectedToken = token == null ? "" : token.trim();
+        String selectedKey = apiKey == null ? "" : apiKey.trim();
+        if (!selectedToken.isEmpty()) {
+            if (!selectedToken.matches("[A-Za-z0-9._~+/=-]+"))
+                throw new IllegalArgumentException("Invalid TMDB read access token format");
+            selectedKey = "";
+        } else if (!selectedKey.matches("[A-Za-z0-9]+")) {
+            throw new IllegalArgumentException("A TMDB read access token or API key is required");
+        }
         if (timeout == null || timeout.isNegative() || timeout.isZero())
             throw new IllegalArgumentException("A positive request timeout is required");
         if (base == null || !base.isAbsolute() || !base.toString().endsWith("/")
@@ -43,7 +59,10 @@ public class HttpTmdbClient implements TmdbClient {
                 || base.getRawQuery() != null || base.getRawFragment() != null)
             throw new IllegalArgumentException("A fixed absolute API base URL is required");
         this.http = java.util.Objects.requireNonNull(http);
-        this.base = base; this.token = token; this.timeout = timeout;
+        this.base = base;
+        this.token = selectedToken;
+        this.apiKey = selectedKey;
+        this.timeout = timeout;
     }
 
     @Override public Optional<Series> resolveSeries(String title) {
@@ -99,8 +118,14 @@ public class HttpTmdbClient implements TmdbClient {
     }
 
     private JsonNode get(String relativeUrl) {
-        HttpRequest request = HttpRequest.newBuilder(base.resolve(relativeUrl)).timeout(timeout)
-            .header("Authorization", "Bearer " + token).header("Accept", "application/json").GET().build();
+        String requestPath = relativeUrl;
+        if (!apiKey.isEmpty()) {
+            requestPath += (relativeUrl.contains("?") ? "&" : "?") + "api_key=" + apiKey;
+        }
+        HttpRequest.Builder builder = HttpRequest.newBuilder(base.resolve(requestPath)).timeout(timeout)
+            .header("Accept", "application/json");
+        if (!token.isEmpty()) builder.header("Authorization", "Bearer " + token);
+        HttpRequest request = builder.GET().build();
         try {
             HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             if (response.statusCode() == 401 || response.statusCode() == 403)

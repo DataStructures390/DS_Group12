@@ -9,8 +9,9 @@ import org.springframework.context.annotation.Configuration;
 public class TmdbConfiguration {
     @Bean
     @ConditionalOnProperty(name = "metadata.tmdb.enabled", havingValue = "true")
-    public TmdbClient httpTmdbClient(@Value("${TMDB_READ_ACCESS_TOKEN:}") String token) {
-        return new HttpTmdbClient(token);
+    public TmdbClient httpTmdbClient(@Value("${TMDB_READ_ACCESS_TOKEN:}") String token,
+                                   @Value("${TMDB_API_KEY:}") String apiKey) {
+        return new HttpTmdbClient(token, apiKey);
     }
 
     @Bean

@@ -47,7 +47,8 @@ class HttpTmdbClientTest {
             if (searchBody != null) body = searchBody;
             else {
                 String query = exchange.getRequestURI().getRawQuery();
-                String title = query == null ? "" : URLDecoder.decode(query.substring(query.indexOf("query=") + 6), StandardCharsets.UTF_8);
+                String title = query == null ? "" : URLDecoder.decode(
+                    query.substring(query.indexOf("query=") + 6).split("&", 2)[0], StandardCharsets.UTF_8);
                 body = mapper.writeValueAsString(Map.of("results", List.of(Map.of("id",123,"name",title)), "total_pages",1));
             }
             if (exchange.getRequestURI().getPath().startsWith("/3/tv/")) body = detailBody;
@@ -88,6 +89,32 @@ class HttpTmdbClientTest {
         assertTrue(client().resolveSeries(null).isEmpty());
         assertTrue(new NoOpTmdbClient().resolveSeries("any").isEmpty());
         assertEquals(0, requests.get());
+    }
+
+    @Test void apiKeyAuthenticatesBothRequestsWithoutAnAuthorizationHeader() {
+        String key = "synthetickey";
+        var client = new HttpTmdbClient(HttpClient.newHttpClient(), base, "", key, Duration.ofSeconds(2));
+        assertTrue(client.resolveSeries("Harbor & garden").isPresent());
+        assertEquals(2, requests.get());
+        assertNull(authorization.get());
+        assertEquals("language=en-US&api_key=" + key, lastQuery.get());
+    }
+
+    @Test void readTokenTakesPrecedenceWhenBothCredentialsAreConfigured() {
+        var client = new HttpTmdbClient(HttpClient.newHttpClient(), base, TEST_TOKEN, "synthetickey", Duration.ofSeconds(2));
+        assertTrue(client.resolveSeries("Harbor").isPresent());
+        assertEquals("Bearer " + TEST_TOKEN, authorization.get());
+        assertFalse(lastQuery.get().contains("api_key"));
+    }
+
+    @Test void apiKeyFailureDoesNotExposeCredentialsInDiagnostics() {
+        String key = "synthetickey";
+        status = 401;
+        var client = new HttpTmdbClient(HttpClient.newHttpClient(), base, "", key, Duration.ofSeconds(2));
+        var error = assertThrows(TmdbAccessException.class, () -> client.resolveSeries("Harbor"));
+        assertEquals(TmdbAccessException.Reason.AUTHENTICATION, error.reason());
+        assertFalse(error.toString().contains(key));
+        assertNull(error.getCause());
     }
 
     @Test void queryIsEncodedAndTokenNeverAppearsInUrl() {
