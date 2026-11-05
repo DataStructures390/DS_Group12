@@ -7,17 +7,17 @@
 
 探索全球真人影集，以多語言名稱辨識、合法來源檢索與可解釋的排名演算法，找到真正相關的網頁。
 
-**Project Status: Stage 0 Java Scaffold** · **Language: Java (planned)** · **Timeline: 4–6 weeks**
+**Project Status: SceneAtlas functional prototype (feature branches)** · **Language: Java 17+** · **Timeline: 4–6 weeks (planning)**
 
-[專題規格](docs/PROJECT_SPEC.md) · [開發時程與測試](docs/ROADMAP.md) · [系統架構](#3-系統架構) · [進度看板](#7-進度看板)
+[四人詳細分工](docs/TEAM_WORKPLAN.md) · [專題規格](docs/PROJECT_SPEC.md) · [開發時程與測試](docs/ROADMAP.md) · [執行看板](docs/EXECUTION_BACKLOG.md)
 
 </div>
 
 ---
 
 > [!IMPORTANT]
-> **目前已新增：** 完整專題文件、Java 17/Maven/Spring Boot 骨架、倒排索引與加權排名的初版程式、JUnit 測試原始碼、GitHub Actions CI、各模組 TODO。  
-> **目前尚未完成：** 真實搜尋 API 串接、多語言影集辨識、SQLite 資料庫整合、完整前端；初版 Java 專案的 Maven 測試仍以實際 CI 結果為準。  
+> **2026-11-06 功能分支已驗證：** 本地倒排索引、排名／分類、SQLite 整理資料、SceneAtlas 簡潔介面與 TMDB 獨立資訊區；PR #8 的 139 個測試及 Java CI 通過，Breaking Bad 即時辨識已實測。
+> **目前尚未完成：** 即時網頁搜尋 API、完整多語影集辨識、PTT／Dcard 覆蓋及正式排名評估。此狀態不表示 PR 已合併 main。
 > 本 README 區分「已確定需求」與「預定功能」，不將規劃當成成果。
 
 ## Contents
