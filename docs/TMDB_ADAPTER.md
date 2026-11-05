@@ -4,7 +4,7 @@ HttpTmdbClient implements the existing TmdbClient interface. It is an optional m
 
 ## Credentials and activation boundary
 
-Default TMDB_ENABLED=false creates NoOpTmdbClient. An explicit true value requires TMDB_READ_ACCESS_TOKEN (API Read Access Token, sent only as a Bearer Authorization header). The old TMDB_API_KEY example is a different v3 authentication method and is not consumed by this implementation. .env files are examples, not automatically loaded. Never place real credentials in code, command arguments, commits or logs.
+Default TMDB_ENABLED=false creates NoOpTmdbClient. With TMDB_ENABLED=true, configure either TMDB_READ_ACCESS_TOKEN for Bearer header authentication or TMDB_API_KEY for the v3 api_key query parameter. A configured read token takes precedence. Clear a previously misconfigured read-token variable before selecting API-key authentication. The application reads environment variables from its launching process. Example .env files require an explicit loader. Both modes use safe diagnostic categories and suppress raw transport exceptions that could contain request URLs.
 
 No token was provided/read, no real request was made, no TMDB metadata was persisted, and no paid account was created in this session. Before displaying retrieved data, satisfy TMDB's attribution/logo requirements and applicable accepted terms. Live smoke verification remains blocked until access and those requirements are in place.
 
@@ -35,3 +35,7 @@ Full suite: **85 tests, zero failures/errors/skips**, 6.315s on Java21/release17
 - [Attribution/noncommercial FAQ](https://developer.themoviedb.org/docs/faq)
 
 Next: live smoke validation after authorization/configuration, verified alias provenance and explicit ambiguous identity behavior. Do not mark real TMDB integration complete from mock results alone.
+
+## 2026-11-05 credential compatibility
+
+TMDB_API_KEY is now supported alongside TMDB_READ_ACCESS_TOKEN, following the official application-authentication reference below. Transport tests cover two authenticated API-key requests, read-token precedence and credential-safe failure diagnostics. Full local suite passes 131 tests. Real credential acceptance still requires a successful TMDB response from the configured launching process.

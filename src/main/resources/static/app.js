@@ -6,6 +6,7 @@ const labels = { COMMUNITY_DISCUSSION: '網友討論', SERIES_INFORMATION: '影�
 let category = '';
 let activeRequest;
 let collectionExamples = [];
+let submittedQuery = '';
 function element(tag, text, className) {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;
@@ -42,15 +43,16 @@ function render(items) {
     results.append(card);
   }
 }
-async function search() {
+async function search(query = input.value.trim()) {
   activeRequest?.abort();
   const request = new AbortController();
   activeRequest = request;
   results.replaceChildren();
-  if (!input.value.trim()) { status.textContent = '請輸入影集名稱或關鍵字。'; results.setAttribute('aria-busy', 'false'); return; }
+  if (!query) { status.textContent = '請輸入影集名稱或關鍵字。'; results.setAttribute('aria-busy', 'false'); return; }
+  submittedQuery = query;
   results.setAttribute('aria-busy', 'true');
   status.textContent = '正在搜尋本地索引…';
-  const params = new URLSearchParams({ q: input.value, limit: '10' });
+  const params = new URLSearchParams({ q: query, limit: '10' });
   if (category) params.set('category', category);
   try {
     const response = await fetch('/api/search?' + params, { signal: request.signal });
@@ -59,6 +61,11 @@ async function search() {
     if (activeRequest !== request) return;
     render(data.results);
     status.textContent = `${data.results.length} 筆結果。${data.message}`;
+    if (!data.results.length && category) {
+      const reset = element('button', '查看全部分類');
+      reset.addEventListener('click', () => document.querySelector('[data-category=""]').click());
+      results.append(reset);
+    }
     if (!data.results.length) status.textContent += collectionExamples.length
       ? ` 可試試 ${collectionExamples.map(q => '「' + q + '」').join('、')}，或切換分類。`
       : ' 請檢查關鍵字或切換分類。';
@@ -70,7 +77,7 @@ form.addEventListener('submit', event => { event.preventDefault(); search(); });
 document.querySelectorAll('[data-category]').forEach(button => button.addEventListener('click', () => {
   category = button.dataset.category;
   document.querySelectorAll('[data-category]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
-  search();
+  if (submittedQuery) search(submittedQuery);
 }));
 const examples = document.querySelector('.examples');
 examples.addEventListener('click', event => {

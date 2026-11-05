@@ -14,7 +14,14 @@ class TmdbConfigurationTest {
         });
     }
     @Test void explicitEnableWithMissingTokenFailsClearly() {
-        context.withPropertyValues("metadata.tmdb.enabled=true", "TMDB_READ_ACCESS_TOKEN=")
+        context.withPropertyValues("metadata.tmdb.enabled=true", "TMDB_READ_ACCESS_TOKEN=", "TMDB_API_KEY=")
             .run(c -> assertNotNull(c.getStartupFailure()));
+    }
+    @Test void apiKeyCanEnableTheClientWithoutAReadToken() {
+        context.withPropertyValues("metadata.tmdb.enabled=true", "TMDB_READ_ACCESS_TOKEN=", "TMDB_API_KEY=synthetickey")
+            .run(c -> {
+                assertNull(c.getStartupFailure());
+                assertInstanceOf(HttpTmdbClient.class, c.getBean(TmdbClient.class));
+            });
     }
 }
