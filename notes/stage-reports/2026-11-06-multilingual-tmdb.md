@@ -18,7 +18,15 @@ country/ID/title mismatch, collision without network, invalid evidence mappings,
 one-request details transport and retained scope rejection.
 All test HTTP data is synthetic. Existing SQLite catalog is unchanged; new ID mapping is a separate resource.
 
-Live verification of the new multilingual path pending packaging and the user's restart from their credential-bearing terminal.
+Packaging succeeded and the user restarted the credential-bearing application. Live browser checks on 2026-11-06 passed:
+
+| Input | TMDB original title | Origin | TV ID | Local result count |
+|---|---|---|---|---|
+| 絕命毒師 | Breaking Bad | US | 1396 | 5 |
+| 기묘한 이야기 | Stranger Things | US | 66732 | 5 |
+| ダーク | Dark | DE | 70523 | 5 |
+
+These are three live sample checks; the 15 language/variant mappings are covered by synthetic tests, not 15 live requests.
 No new web search service selected, no subscriptions or credential copies created.
 
 Next: team claims roles from docs/TEAM_WORKPLAN.md; A supplies additional evidenced identities,
