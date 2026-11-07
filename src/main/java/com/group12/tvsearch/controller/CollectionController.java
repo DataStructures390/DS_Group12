@@ -1,6 +1,7 @@
 package com.group12.tvsearch.controller;
 
 import com.group12.tvsearch.sources.CuratedSearchProvider;
+import com.group12.tvsearch.sources.PopularSearchProvider;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,12 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class CollectionController {
     private final Optional<CuratedSearchProvider> curated;
     private final boolean demoEnabled;
+    private final Optional<PopularSearchProvider> popular;
     public CollectionController(Optional<CuratedSearchProvider> curated,
+                                Optional<PopularSearchProvider> popular,
                                 @Value("${search.local-demo.enabled:true}") boolean demoEnabled) {
-        this.curated = curated; this.demoEnabled = demoEnabled;
+        this.curated = curated; this.popular = popular; this.demoEnabled = demoEnabled;
     }
     @GetMapping("/api/collection")
     public CollectionInfo info() {
+        if (popular.isPresent()) return new CollectionInfo("popular",
+            popular.get().fresh() ? popular.get().description() : "影集資料快取已過期或無法讀取，請更新後重新啟動。",
+            popular.get().fresh() ? popular.get().examples() : List.of());
         if (curated.isPresent()) return new CollectionInfo("curated",
             "人工整理資料集：真實影集與已核對 Wikipedia 連結，自寫導覽文字；不是即時搜尋。核對日期 2026-11-04。只有影集資訊分類。",
             List.of("絕命毒師", "기묘한 이야기", "ダーク"));

@@ -26,7 +26,8 @@ function render(items) {
     const r = item.result;
     const card = element('article', undefined, 'result');
     const demo = r.source === 'LOCAL_DEMO';
-    const sourceLabel = demo ? '本地虛構文件' : r.source === 'CURATED_LOCAL' ? '人工核對 Wikipedia 連結' : r.source;
+    const sourceLabel = demo ? '本地虛構文件' : r.source === 'CURATED_LOCAL' ? '人工核對 Wikipedia 連結'
+      : r.source === 'TMDB_CATALOG' ? 'TMDB 影集資料快取' : r.source;
     card.append(element('p', `${sourceLabel} · ${labels[r.category] || r.category}`, 'meta'));
     const heading = element('h2');
     const href = safeLink(r);
@@ -37,7 +38,7 @@ function render(items) {
     const details = element('details');
     details.append(element('summary', `排名分數 ${item.score.toFixed(1)} / 100 · 查看依據`));
     details.append(element('p', `關鍵字 K ${r.keywordRelevance.toFixed(1)} · 影集 M ${r.seriesRelevance.toFixed(1)} · 來源 S ${r.sourceRelevance.toFixed(1)} · 日期 F ${r.freshness.toFixed(1)}`));
-    if (demo || r.source === 'CURATED_LOCAL') details.append(element('p',
+    if (demo || r.source === 'CURATED_LOCAL' || r.source === 'TMDB_CATALOG') details.append(element('p',
       `K：查詢詞在索引欄位的覆蓋率；M：查詢詞在${demo ? '虛構劇名與示範別名' : '原名與有出處別名'}的覆蓋率。S/F 缺少可靠資料，以 0 分處理；不代表來源評價低。`));
     card.append(details);
     results.append(card);

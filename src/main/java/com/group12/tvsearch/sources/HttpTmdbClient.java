@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /** Conservative exact-title resolver: TV search then scope-checked details, at most two requests. */
-public class HttpTmdbClient implements TmdbClient {
+public class HttpTmdbClient implements TmdbClient, TmdbCatalogSource {
     private final HttpClient http;
     private final URI base;
     private final String token;
@@ -95,6 +95,46 @@ public class HttpTmdbClient implements TmdbClient {
     @Override public Optional<Series> resolveSeriesById(long id) {
         if (id <= 0) throw new IllegalArgumentException("A positive TMDB TV ID is required");
         JsonNode details = get("tv/" + id + "?language=en-US");
+        return parseSeries(id, details);
+    }
+
+    @Override public Page popular(int page) {
+        if (page < 1 || page > 100) throw new IllegalArgumentException("Popular page must be between 1 and 100");
+        JsonNode json = get("tv/popular?language=en-US&page=" + page);
+        if (!json.path("page").isIntegralNumber() || !json.path("page").canConvertToInt() || json.path("page").asInt() != page
+                || !json.path("total_pages").isIntegralNumber() || !json.path("total_pages").canConvertToInt() || json.path("total_pages").asInt() < page
+                || !json.path("results").isArray() || json.path("results").size() > 100)
+            throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
+        var ids = new java.util.ArrayList<Long>();
+        for (var row : json.path("results")) {
+            if (!row.path("id").isIntegralNumber() || !row.path("id").canConvertToLong() || row.path("id").asLong() <= 0)
+                throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
+            ids.add(row.path("id").asLong());
+        }
+        return new Page(page, json.path("total_pages").asInt(), ids);
+    }
+
+    @Override public Optional<Basic> basic(long id) {
+        if (id <= 0) throw new IllegalArgumentException("A positive TMDB TV ID is required");
+        JsonNode details = get("tv/" + id + "?language=en-US");
+        var series = parseSeries(id, details);
+        if (series.isEmpty()) return Optional.empty();
+        String name = details.path("name").asText("");
+        String language = details.path("original_language").asText("");
+        String date = details.path("first_air_date").asText("");
+        if (name.isBlank() || !details.path("name").isTextual() || !language.matches("[a-z]{2,3}")
+                || !details.path("original_language").isTextual())
+            throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
+        if (details.hasNonNull("first_air_date") && !details.path("first_air_date").isTextual())
+            throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);
+        if (!date.isEmpty()) {
+            try { java.time.LocalDate.parse(date); }
+            catch (java.time.format.DateTimeParseException e) { throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE); }
+        }
+        return Optional.of(new Basic(series.get(), name, language, date));
+    }
+
+    private Optional<Series> parseSeries(long id, JsonNode details) {
         if (!details.path("id").isIntegralNumber() || !details.path("id").canConvertToLong()
                 || details.path("id").asLong(-1) != id)
             throw failure(TmdbAccessException.Reason.MALFORMED_RESPONSE);

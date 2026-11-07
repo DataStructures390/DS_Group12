@@ -19,10 +19,16 @@ public class VerifiedSeriesResolver {
     private final Map<String, Set<Long>> aliases = new HashMap<>();
     private final Map<Long, CuratedCatalog.Entry> entries = new HashMap<>();
     private final Map<Long, Long> tmdbIds = new HashMap<>();
+    private Optional<PopularSearchProvider> popular = Optional.empty();
 
-    @Autowired
     public VerifiedSeriesResolver(TmdbClient client) throws IOException {
         this(client, CuratedCatalog.load(), loadIdentities());
+    }
+
+    @Autowired
+    public VerifiedSeriesResolver(TmdbClient client, Optional<PopularSearchProvider> popular) throws IOException {
+        this(client);
+        this.popular = popular;
     }
 
     VerifiedSeriesResolver(TmdbClient client, CuratedCatalog catalog, IdentityCatalog identities) {
@@ -58,6 +64,18 @@ public class VerifiedSeriesResolver {
     public Optional<Series> resolve(String query) {
         String normalized = processor.normalize(query);
         if (normalized.isBlank()) return Optional.empty();
+        if (popular.isPresent()) {
+            if (!popular.get().fresh()) return Optional.empty();
+            var cached = popular.get().candidates(query);
+            if (cached.size() > 1) return Optional.empty();
+            if (cached.size() == 1) {
+                var expected = cached.iterator().next();
+                return client.resolveSeriesById(expected.id()).filter(series ->
+                    series.id() == expected.id()
+                    && processor.normalize(series.originalTitle()).equals(processor.normalize(expected.originalTitle()))
+                    && series.originCountry().equals(expected.originCountry()));
+            }
+        }
         var candidates = aliases.get(normalized);
         if (candidates == null) return client.resolveSeries(query);
         if (candidates.size() != 1) return Optional.empty();

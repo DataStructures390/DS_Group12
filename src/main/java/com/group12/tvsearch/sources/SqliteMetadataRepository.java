@@ -31,7 +31,7 @@ public class SqliteMetadataRepository {
         migrate();
     }
 
-    private Connection open() throws SQLException {
+    Connection open() throws SQLException {
         Connection connection = DriverManager.getConnection(jdbcUrl);
         try (var statement = connection.createStatement()) {
             statement.execute("PRAGMA foreign_keys = ON");
@@ -78,7 +78,7 @@ public class SqliteMetadataRepository {
         }
     }
 
-    private void saveSeries(Connection connection, Series series, boolean confirmedLiveActionScripted) throws SQLException {
+    void saveSeries(Connection connection, Series series, boolean confirmedLiveActionScripted) throws SQLException {
         Objects.requireNonNull(series);
         if (!confirmedLiveActionScripted || series.id() <= 0 || series.originalTitle() == null
                 || series.originalTitle().isBlank() || series.originCountry() == null) {
@@ -111,7 +111,7 @@ public class SqliteMetadataRepository {
         }
     }
 
-    private void saveAlias(Connection connection, SeriesAlias alias, String evidence) throws SQLException {
+    void saveAlias(Connection connection, SeriesAlias alias, String evidence) throws SQLException {
         Objects.requireNonNull(alias);
         String normalized = processor.normalize(alias.title());
         if (normalized.isBlank() || alias.locale() == null || alias.locale().isBlank()
@@ -152,7 +152,7 @@ public class SqliteMetadataRepository {
         }
     }
 
-    private void saveDocument(Connection connection, MetadataDocument document) throws SQLException {
+    void saveDocument(Connection connection, MetadataDocument document) throws SQLException {
         Objects.requireNonNull(document);
         try (var ps = connection.prepareStatement("""
                 INSERT INTO document(id,series_id,url,title,body,category,provenance,license)
