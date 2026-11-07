@@ -7,6 +7,7 @@ import com.group12.tvsearch.ranking.ResultMerger;
 import com.group12.tvsearch.sources.WebSearchClient;
 import com.group12.tvsearch.sources.LocalSearchProvider;
 import com.group12.tvsearch.sources.CuratedSearchProvider;
+import com.group12.tvsearch.sources.PopularSearchProvider;
 import java.util.Optional;
 import com.group12.tvsearch.model.ResultCategory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ public class DefaultSearchService implements SearchService {
     private final RankingAlgorithm ranking;
     private final LocalSearchProvider local;
     private final Optional<CuratedSearchProvider> curated;
+    private final Optional<PopularSearchProvider> popular;
 
     public DefaultSearchService(WebSearchClient web, QueryProcessor processor,
                                 ResultMerger merger, RankingAlgorithm ranking) {
@@ -34,16 +36,24 @@ public class DefaultSearchService implements SearchService {
         this(web, processor, merger, ranking, local, Optional.empty());
     }
 
-    @Autowired
     public DefaultSearchService(WebSearchClient web, QueryProcessor processor,
                                 ResultMerger merger, RankingAlgorithm ranking,
                                 LocalSearchProvider local, Optional<CuratedSearchProvider> curated) {
+        this(web, processor, merger, ranking, local, curated, Optional.empty());
+    }
+
+    @Autowired
+    public DefaultSearchService(WebSearchClient web, QueryProcessor processor,
+                                ResultMerger merger, RankingAlgorithm ranking,
+                                LocalSearchProvider local, Optional<CuratedSearchProvider> curated,
+                                Optional<PopularSearchProvider> popular) {
         this.web = web;
         this.processor = processor;
         this.merger = merger;
         this.ranking = ranking;
         this.local = local;
         this.curated = curated;
+        this.popular = popular;
     }
 
     @Override
@@ -58,6 +68,7 @@ public class DefaultSearchService implements SearchService {
             return new SearchResponse(query, "EMPTY_QUERY", "請輸入影集名稱。", List.of());
         }
         int boundedLimit = Math.max(1, Math.min(50, limit));
+        if (popular.isPresent()) return popular.get().search(query, boundedLimit, category);
         if (curated.isPresent()) return curated.get().search(query, boundedLimit, category);
         List<SearchResult> localCandidates = local == null ? List.of() : local.search(normalized);
         if (!localCandidates.isEmpty()) {

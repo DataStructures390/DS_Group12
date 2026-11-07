@@ -35,6 +35,12 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 
 ## Next commands
 
+### 2026-11-07 popular 500 preparation
+
+- User selected popular-first, 500 basic in-scope series; five-language names deferred.
+- P2-01 / P2-02 / P2-03: dedicated resumable TMDB cache/importer and offline popular collection implemented; exact 500 synthetic import, dedup/resume/429/expiry tests included. 178 local tests pass.
+- Real import NOT RUN: account holder must clarify authorization for intended search/cache use under current TMDB terms. Read docs/POPULAR_CATALOG.md. Existing curated data remains untouched; no claim of 500 live records.
+
 ### 2026-11-06 multilingual increment
 
 - P2-03 / P3-03: three curated series now have separately evidenced TMDB TV ID mappings and 15 language/variant names in VerifiedSeriesResolver. Alias HashMap collisions produce no network request; live scope/title/country validation remains mandatory. 163 local tests pass; new live multilingual path pending credential-bearing restart.

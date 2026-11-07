@@ -51,7 +51,8 @@ class HttpTmdbClientTest {
                     query.substring(query.indexOf("query=") + 6).split("&", 2)[0], StandardCharsets.UTF_8);
                 body = mapper.writeValueAsString(Map.of("results", List.of(Map.of("id",123,"name",title)), "total_pages",1));
             }
-            if (exchange.getRequestURI().getPath().startsWith("/3/tv/")) body = detailBody;
+            if (exchange.getRequestURI().getPath().startsWith("/3/tv/")
+                    && !exchange.getRequestURI().getPath().equals("/3/tv/popular")) body = detailBody;
             if (delayMillis > 0) {
                 try { Thread.sleep(delayMillis); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
             }
@@ -70,6 +71,47 @@ class HttpTmdbClientTest {
         return new HttpTmdbClient(HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).build(), base, TEST_TOKEN, timeout);
     }
     private HttpTmdbClient client() { return client(Duration.ofSeconds(2)); }
+
+    @Test void popularListingPreservesOrderAndValidatesPageWithoutFetchingDetails() {
+        searchBody = "{\"page\":1,\"total_pages\":20,\"results\":[{\"id\":123},{\"id\":456},{\"id\":123}]}";
+        var page = client().popular(1);
+        assertEquals(List.of(123L,456L,123L), page.ids());
+        assertEquals(20, page.totalPages());
+        assertEquals(1, requests.get());
+        assertThrows(IllegalArgumentException.class, () -> client().popular(101));
+        assertEquals(1, requests.get());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "{\"page\":2,\"total_pages\":20,\"results\":[]}",
+        "{\"page\":1,\"total_pages\":0,\"results\":[]}",
+        "{\"page\":1,\"total_pages\":20,\"results\":[{\"id\":-1}]}",
+        "{\"page\":1,\"total_pages\":20,\"results\":[{\"id\":\"123\"}]}",
+        "{\"page\":1,\"total_pages\":20,\"results\":{}}"
+    })
+    void malformedPopularListsFailSafely(String body) {
+        searchBody = body;
+        assertEquals(TmdbAccessException.Reason.MALFORMED_RESPONSE,
+            assertThrows(TmdbAccessException.class, () -> client().popular(1)).reason());
+    }
+
+    @Test void basicFieldsUseOneValidatedDetailsRequestAndNoSynopsis() {
+        detailBody = detailBody.replace("\"type\":", "\"name\":\"Display title\",\"original_language\":\"en\",\"first_air_date\":\"2020-01-01\",\"type\":");
+        var basic = client().basic(123).orElseThrow();
+        assertEquals("Fictional original", basic.series().originalTitle());
+        assertEquals("Display title", basic.displayTitle());
+        assertEquals("2020-01-01", basic.firstAirDate());
+        assertEquals(1, requests.get());
+    }
+
+    @Test void incompleteBasicFieldsAndImpossibleDatesAreNotImported() {
+        assertEquals(TmdbAccessException.Reason.MALFORMED_RESPONSE,
+            assertThrows(TmdbAccessException.class, () -> client().basic(123)).reason());
+        detailBody = detailBody.replace("\"type\":", "\"name\":\"Display\",\"original_language\":\"en\",\"first_air_date\":\"2020-02-31\",\"type\":");
+        assertEquals(TmdbAccessException.Reason.MALFORMED_RESPONSE,
+            assertThrows(TmdbAccessException.class, () -> client().basic(123)).reason());
+    }
 
     @Test void checkedIdUsesOneScopeValidatedDetailsRequest() {
         assertEquals(123, client().resolveSeriesById(123).orElseThrow().id());
