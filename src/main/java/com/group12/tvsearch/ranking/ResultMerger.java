@@ -25,7 +25,7 @@ public class ResultMerger {
         String trimmed = url.trim();
         try {
             URI uri = URI.create(trimmed).normalize();
-            if (uri.getHost() == null) return trimmed;
+            if (!uri.isAbsolute() || uri.getHost() == null) return trimmed;
             String scheme = uri.getScheme().toLowerCase(Locale.ROOT);
             if (!scheme.equals("http") && !scheme.equals("https")) return trimmed;
             String host = uri.getHost().toLowerCase(Locale.ROOT);
