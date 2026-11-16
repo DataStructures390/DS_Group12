@@ -1,0 +1,106 @@
+{
+  "_note": "Offline fake data in the Brave Web Search response shape. Every URL uses a reserved .example host and does not exist. Not real search results.",
+  "sampleQueries": ["Breaking Bad", "絕命毒師", "Squid Game"],
+  "queries": {
+    "breaking bad": {
+      "type": "search",
+      "web": {
+        "type": "search",
+        "results": [
+          {
+            "title": "[假資料] <strong>Breaking Bad</strong> 全季心得討論",
+            "url": "https://www.ptt.example/bbs/EAseries/M.fixture-001.html",
+            "description": "假資料：模擬論壇討論串，用來測試<strong>Breaking Bad</strong>的網友討論分類。",
+            "page_age": "2026-10-20T08:00:00"
+          },
+          {
+            "title": "[假資料] Breaking Bad 重複網址測試",
+            "url": "https://WWW.PTT.EXAMPLE:443/bbs/EAseries/M.fixture-001.html#comments",
+            "description": "假資料：與第一筆是同一個網址，應被 HashSet 去重。",
+            "page_age": "2026-10-20T08:00:00"
+          },
+          {
+            "title": "[假資料] 追完 Breaking Bad 的感想",
+            "url": "https://www.dcard.example/f/tvepisode/p/fixture-002",
+            "description": "假資料：模擬另一個討論區的文章。",
+            "page_age": "2025-06-01T12:00:00"
+          },
+          {
+            "title": "[假資料] Breaking Bad &amp; 影集基本資料",
+            "url": "https://zh.wiki.example/wiki/Breaking_Bad_fixture",
+            "description": "假資料：模擬百科頁面，測試影集資訊分類與 HTML 實體還原。",
+            "page_age": "2019-01-01T00:00:00"
+          },
+          {
+            "title": "[假資料] Breaking Bad 專業影評",
+            "url": "https://www.review.example/tv/breaking-bad-fixture",
+            "description": "假資料：模擬影評網站，測試專業影評分類。"
+          },
+          {
+            "title": "[假資料] Breaking Bad 播放頁",
+            "url": "https://www.stream.example/title/fixture-005",
+            "description": "假資料：模擬串流平台頁面，不代表任何真實平台有上架。",
+            "page_age": "2026-09-01T00:00:00"
+          },
+          {
+            "title": "[假資料] 某個人部落格提到 Breaking Bad",
+            "url": "https://blog.example/posts/fixture-006",
+            "description": "假資料：未知網域，應歸入影集資訊並給較低來源分數。",
+            "page_age": "2026-03-15T00:00:00"
+          },
+          {
+            "title": "[假資料] 不合法網址應被略過",
+            "url": "ftp://files.example/breaking-bad",
+            "description": "假資料：非 http/https 網址，不應出現在結果中。"
+          }
+        ]
+      }
+    },
+    "絕命毒師": {
+      "type": "search",
+      "web": {
+        "type": "search",
+        "results": [
+          {
+            "title": "[假資料] <strong>絕命毒師</strong> 結局討論",
+            "url": "https://www.ptt.example/bbs/EAseries/M.fixture-101.html",
+            "description": "假資料：模擬中文論壇討論<strong>絕命毒師</strong>。",
+            "page_age": "2026-08-10T00:00:00"
+          },
+          {
+            "title": "[假資料] 絕命毒師 影集資料",
+            "url": "https://zh.wiki.example/wiki/絕命毒師_fixture",
+            "description": "假資料：模擬中文百科頁面。",
+            "page_age": "2024-02-02T00:00:00"
+          },
+          {
+            "title": "[假資料] 絕命毒師 影評",
+            "url": "https://www.review.example/zh/breaking-bad-fixture",
+            "description": "假資料：模擬中文影評。",
+            "page_age": "2025-11-01T00:00:00"
+          }
+        ]
+      }
+    },
+    "squid game": {
+      "type": "search",
+      "web": {
+        "type": "search",
+        "results": [
+          {
+            "title": "[假資料] <strong>Squid Game</strong> season discussion",
+            "url": "https://www.dcard.example/f/tvepisode/p/fixture-201",
+            "description": "假資料：模擬 Squid Game 的討論文章。",
+            "page_age": "2026-07-01T00:00:00"
+          },
+          {
+            "title": "[假資料] Squid Game 播放頁",
+            "url": "https://www.stream.example/title/fixture-202",
+            "description": "假資料：模擬串流平台頁面，不代表任何真實平台有上架。",
+            "page_age": "2026-01-01T00:00:00"
+          }
+        ]
+      }
+    }
+  }
+}

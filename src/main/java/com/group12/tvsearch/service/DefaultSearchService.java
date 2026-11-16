@@ -81,12 +81,12 @@ public class DefaultSearchService implements SearchService {
         List<SearchResult> candidates = web.search(normalized, boundedLimit);
         if (candidates.isEmpty()) {
             return new SearchResponse(query, "NO_LIVE_SEARCH",
-                    "沒有符合的本地文件；尚未連接網頁搜尋 API，沒有即時網頁結果。", List.of());
+                    "沒有符合的本地文件；" + web.emptyNotice(), List.of());
         }
         List<SearchResult> filtered = candidates.stream()
                 .filter(r -> category == null || r.category() == category).toList();
         return new SearchResponse(query, filtered.isEmpty() ? "NO_RESULTS" : "RESULTS_FROM_PROVIDER",
-                "結果已經去重與排序；來源可信度仍需驗證。",
+                web.resultNotice(),
                 ranking.rank(merger.deduplicate(filtered), boundedLimit));
     }
 }
