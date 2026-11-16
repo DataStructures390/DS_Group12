@@ -1,13 +1,13 @@
 <div align="center">
 
-# TV SERIES SEARCH ENGINE
-### Smart Ranking · Cross-Language Discovery · AI-Assisted Query Expansion
+# 追劇雷達 DramaRadar
+### 真人影集搜尋引擎 · Smart Ranking · Cross-Language Discovery
 
 **資料結構期末專題｜Group 12**
 
 探索全球真人影集，以多語言名稱辨識、合法來源檢索與可解釋的排名演算法，找到真正相關的網頁。
 
-**Project Status: SceneAtlas functional prototype (feature branches)** · **Language: Java 17+** · **Timeline: 4–6 weeks (planning)**
+**Project Status: DramaRadar functional prototype (feature branches)** · **Language: Java 17+** · **Timeline: 4–6 weeks (planning)**
 
 [四人詳細分工](docs/TEAM_WORKPLAN.md) · [專題規格](docs/PROJECT_SPEC.md) · [開發時程與測試](docs/ROADMAP.md) · [執行看板](docs/EXECUTION_BACKLOG.md)
 
@@ -16,7 +16,7 @@
 ---
 
 > [!IMPORTANT]
-> **2026-11-06 功能分支已驗證：** 本地倒排索引、排名／分類、SQLite 整理資料、SceneAtlas 簡潔介面與 TMDB 獨立資訊區；PR #8 的 139 個測試及 Java CI 通過，Breaking Bad 即時辨識已實測。
+> **2026-11-06 功能分支已驗證：** 本地倒排索引、排名／分類、SQLite 整理資料、追劇雷達簡潔介面與 TMDB 獨立資訊區；PR #8 的 139 個測試及 Java CI 通過，Breaking Bad 即時辨識已實測。
 > **目前尚未完成：** 即時網頁搜尋 API、完整多語影集辨識、PTT／Dcard 覆蓋及正式排名評估。此狀態不表示 PR 已合併 main。
 > 本 README 區分「已確定需求」與「預定功能」，不將規劃當成成果。
 

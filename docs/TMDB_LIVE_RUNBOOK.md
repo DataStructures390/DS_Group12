@@ -1,4 +1,4 @@
-# SceneAtlas TMDB live verification
+# DramaRadar (追劇雷達) TMDB live verification
 
 The user reported successful authentication in their own PowerShell on 2026-11-06.
 That environment belongs to that terminal; the agent and the already running application do not inherit it.
