@@ -36,4 +36,28 @@ class DefaultSearchServiceTest {
         assertEquals("RESULTS_FROM_PROVIDER", response.status());
         assertEquals(List.of(relative, absolute), response.results().stream().map(result -> result.result()).toList());
     }
+
+    @Test
+    void providerCategoryFilterAndDeduplicationHappenBeforeTopK() {
+        SearchResult discussion = new SearchResult("https://forum.example/a", "Series talk", "", "forum.example",
+                ResultCategory.COMMUNITY_DISCUSSION, 100, 100, 0, 0);
+        SearchResult duplicate = new SearchResult("https://FORUM.example:443/a#c", "Series talk", "", "forum.example",
+                ResultCategory.COMMUNITY_DISCUSSION, 100, 100, 0, 0);
+        SearchResult review = new SearchResult("https://review.example/b", "Series review", "", "review.example",
+                ResultCategory.PROFESSIONAL_REVIEW, 50, 50, 0, 0);
+        List<SearchResult> raw = List.of(discussion, duplicate, review);
+        int[] requested = {0};
+        SearchService service = new DefaultSearchService((query, limit) -> {
+            requested[0] = limit;
+            return raw.subList(0, Math.min(limit, raw.size()));
+        }, new QueryProcessor(), new ResultMerger(), new RankingAlgorithm());
+
+        SearchResponse filtered = service.search("series", 1, ResultCategory.PROFESSIONAL_REVIEW);
+        assertEquals("RESULTS_FROM_PROVIDER", filtered.status());
+        assertEquals(List.of(review), filtered.results().stream().map(result -> result.result()).toList());
+        assertEquals(DefaultSearchService.MAX_LIMIT, requested[0]);
+
+        SearchResponse topTwo = service.search("series", 2);
+        assertEquals(List.of(discussion, review), topTwo.results().stream().map(result -> result.result()).toList());
+    }
 }

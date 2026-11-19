@@ -23,6 +23,9 @@
 Rotten Tomatoes／Metacritic 為專業影評，Netflix／Disney+／Prime Video 為觀看平台，未知網域歸入影集資訊。
 非 http/https 網址、相對網址與沒有標題的結果會被略過；同網址（大小寫、預設埠、#片段不同）由既有 HashSet 去重。
 
+2026-11-19 修正：搜尋服務一律向網頁來源要最多筆候選（Brave 單次上限 20 筆），先分類篩選與去重，最後才取前 limit 筆。
+先前會先截斷成 limit 筆再篩選，所以 `limit=1&category=PROFESSIONAL_REVIEW` 會錯誤回傳 0 筆，`limit=2` 也可能因重複網址只剩 1 筆。
+
 S 權重是設計值，不是量測出的可信度；正式評估後再調整。
 
 ## 怎麼開啟

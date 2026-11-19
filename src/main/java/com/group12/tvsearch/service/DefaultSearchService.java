@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 /** Local demonstration first; external NoOp behavior remains explicit. */
 @Service
 public class DefaultSearchService implements SearchService {
+    /** Upper bound for returned results; also the candidate pool requested from web search. */
+    static final int MAX_LIMIT = 50;
     private final WebSearchClient web;
     private final QueryProcessor processor;
     private final ResultMerger merger;
@@ -67,7 +69,7 @@ public class DefaultSearchService implements SearchService {
         if (normalized.isBlank()) {
             return new SearchResponse(query, "EMPTY_QUERY", "請輸入影集名稱。", List.of());
         }
-        int boundedLimit = Math.max(1, Math.min(50, limit));
+        int boundedLimit = Math.max(1, Math.min(MAX_LIMIT, limit));
         if (popular.isPresent()) return popular.get().search(query, boundedLimit, category);
         if (curated.isPresent()) return curated.get().search(query, boundedLimit, category);
         List<SearchResult> localCandidates = local == null ? List.of() : local.search(normalized);
@@ -78,7 +80,9 @@ public class DefaultSearchService implements SearchService {
                     "本地虛構示範資料；不是即時網頁結果。來源與日期未評分，S/F 為 0。",
                     ranking.rank(merger.deduplicate(filtered), boundedLimit));
         }
-        List<SearchResult> candidates = web.search(normalized, boundedLimit);
+        // Ask for the widest candidate pool so category filtering and URL de-duplication
+        // happen before Top-K; the web client clamps this to its own per-request maximum.
+        List<SearchResult> candidates = web.search(normalized, MAX_LIMIT);
         if (candidates.isEmpty()) {
             return new SearchResponse(query, "NO_LIVE_SEARCH",
                     "沒有符合的本地文件；" + web.emptyNotice(), List.of());

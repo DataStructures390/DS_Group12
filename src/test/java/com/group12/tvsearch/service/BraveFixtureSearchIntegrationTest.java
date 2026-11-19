@@ -34,6 +34,20 @@ class BraveFixtureSearchIntegrationTest {
             .andExpect(jsonPath("$.results[0].result.category").value("PROFESSIONAL_REVIEW"));
     }
 
+    @Test void smallLimitsStillFilterAndDeduplicateBeforeTopK() throws Exception {
+        // The review is the 5th raw fixture item; it must survive limit=1 with a category filter.
+        mvc.perform(get("/api/search").param("q", "Breaking Bad").param("limit", "1")
+                .param("category", "PROFESSIONAL_REVIEW"))
+            .andExpect(jsonPath("$.status").value("RESULTS_FROM_PROVIDER"))
+            .andExpect(jsonPath("$.results.length()").value(1))
+            .andExpect(jsonPath("$.results[0].result.category").value("PROFESSIONAL_REVIEW"));
+        // The first two raw items are the same URL; limit=2 still returns two distinct pages.
+        mvc.perform(get("/api/search").param("q", "Breaking Bad").param("limit", "2"))
+            .andExpect(jsonPath("$.results.length()").value(2))
+            .andExpect(jsonPath("$.results[0].result.url", containsString("fixture-001")))
+            .andExpect(jsonPath("$.results[1].result.url", not(containsString("fixture-001"))));
+    }
+
     @Test void localDemoStillWinsAndUnknownQueriesAreHonest() throws Exception {
         mvc.perform(get("/api/search").param("q", "港灣燈火"))
             .andExpect(jsonPath("$.status").value("LOCAL_DEMO_RESULTS"));

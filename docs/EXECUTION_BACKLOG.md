@@ -35,6 +35,10 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 
 ## Next commands
 
+### 2026-11-19 nightly fix
+
+- P1-07 / P2-04: web-provider results now follow the documented contract (category filter and URL de-duplication before Top-K). Previously the service truncated provider candidates to `limit` first, so `limit=1&category=PROFESSIONAL_REVIEW` on the Brave fixture returned NO_RESULTS and `limit=2` could return one page. Regression tests added; 194 local tests pass. Browser UI (limit 10) was not affected for the current fixture.
+
 ### 2026-11-07 popular 500 preparation
 
 - User selected popular-first, 500 basic in-scope series; five-language names deferred.
