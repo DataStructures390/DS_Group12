@@ -50,6 +50,16 @@ class LocalSearchIntegrationTest {
         }
     }
 
+    @Test void queryLengthBoundMatchesSearchBoxAndSeriesEndpoint() throws Exception {
+        String atLimit = "Harbor Lights" + " ".repeat(300 - "Harbor Lights".length());
+        mvc.perform(get("/api/search").param("q", atLimit))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("LOCAL_DEMO_RESULTS"))
+            .andExpect(jsonPath("$.results.length()").value(4));
+        mvc.perform(get("/api/search").param("q", atLimit + "x"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("QUERY_TOO_LONG"))
+            .andExpect(jsonPath("$.results.length()").value(0));
+    }
+
     @Test void localLinksResolveAndDoNotPretendToBeRealWebsites() throws Exception {
         assertEquals(12, repository.findAll().size());
         for (var doc : repository.findAll()) {

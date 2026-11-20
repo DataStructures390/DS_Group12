@@ -35,6 +35,10 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 
 ## Next commands
 
+### 2026-11-20 nightly fix
+
+- P1-07: `/api/search` now returns `QUERY_TOO_LONG` (HTTP 200, no results) for queries over 300 characters, matching the search box `maxlength` and `/api/series`. Previously the search endpoint had no bound, so an over-long query was still tokenized, looked up and (with a web provider) forwarded. Checked before any index or provider lookup; boundary tests at 300/301 added. 196 local tests pass (`clean verify`). No UI change: the search box already blocks longer input.
+
 ### 2026-11-19 nightly fix
 
 - P1-07 / P2-04: web-provider results now follow the documented contract (category filter and URL de-duplication before Top-K). Previously the service truncated provider candidates to `limit` first, so `limit=1&category=PROFESSIONAL_REVIEW` on the Brave fixture returned NO_RESULTS and `limit=2` could return one page. Regression tests added; 194 local tests pass. Browser UI (limit 10) was not affected for the current fixture.

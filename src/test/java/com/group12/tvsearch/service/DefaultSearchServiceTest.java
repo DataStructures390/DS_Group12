@@ -12,6 +12,24 @@ import org.junit.jupiter.api.Test;
 
 class DefaultSearchServiceTest {
     @Test
+    void overlongQueryIsRejectedBeforeAnyProviderRequest() {
+        int[] calls = {0};
+        SearchService service = new DefaultSearchService((query, limit) -> {
+            calls[0]++;
+            return List.of();
+        }, new QueryProcessor(), new ResultMerger(), new RankingAlgorithm());
+
+        SearchResponse tooLong = service.search("a".repeat(DefaultSearchService.MAX_QUERY_LENGTH + 1), 10);
+        assertEquals("QUERY_TOO_LONG", tooLong.status());
+        assertTrue(tooLong.results().isEmpty());
+        assertEquals(0, calls[0]);
+
+        SearchResponse atLimit = service.search("a".repeat(DefaultSearchService.MAX_QUERY_LENGTH), 10);
+        assertEquals("NO_LIVE_SEARCH", atLimit.status());
+        assertEquals(1, calls[0]);
+    }
+
+    @Test
     void noWebProviderMeansNoFabricatedResults() {
         SearchService service = new DefaultSearchService(
                 new NoOpWebSearchClient(), new QueryProcessor(),

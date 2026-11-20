@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 public class DefaultSearchService implements SearchService {
     /** Upper bound for returned results; also the candidate pool requested from web search. */
     static final int MAX_LIMIT = 50;
+    /** Same bound as the search box (maxlength) and /api/series QUERY_TOO_LONG. */
+    static final int MAX_QUERY_LENGTH = 300;
     private final WebSearchClient web;
     private final QueryProcessor processor;
     private final ResultMerger merger;
@@ -68,6 +70,11 @@ public class DefaultSearchService implements SearchService {
         String normalized = processor.normalize(query);
         if (normalized.isBlank()) {
             return new SearchResponse(query, "EMPTY_QUERY", "請輸入影集名稱。", List.of());
+        }
+        if (query.length() > MAX_QUERY_LENGTH) {
+            // Rejected before any index lookup or provider request is made.
+            return new SearchResponse(query, "QUERY_TOO_LONG",
+                    "請使用 " + MAX_QUERY_LENGTH + " 字以內的影集名稱或關鍵字。", List.of());
         }
         int boundedLimit = Math.max(1, Math.min(MAX_LIMIT, limit));
         if (popular.isPresent()) return popular.get().search(query, boundedLimit, category);

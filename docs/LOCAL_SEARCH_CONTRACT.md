@@ -7,7 +7,7 @@
 - GET /api/search?q=...&limit=10&category=PROFESSIONAL_REVIEW. Omit category for All. Unknown categories/noninteger limits return HTTP 400. Service and controller clamp limits to 1–50.
 - Local demo is enabled by default; LOCAL_DEMO_ENABLED=false disables both retrieval and document routes. NoOpWebSearchClient remains unchanged and does not call the network.
 - Local-first is a temporary Stage 1 policy: if local candidates exist, return only local candidates, even when the selected category is empty. Mixing live results is P2-05 and is not implemented.
-- Empty input: EMPTY_QUERY. Local hits: LOCAL_DEMO_RESULTS. Category has no matching hits: NO_RESULTS. No local matches and NoOp provider: NO_LIVE_SEARCH. A nonempty authorized provider can still return RESULTS_FROM_PROVIDER.
+- Empty input: EMPTY_QUERY. Input longer than 300 characters (same bound as the search box and /api/series): QUERY_TOO_LONG, checked before any index or provider lookup. Local hits: LOCAL_DEMO_RESULTS. Category has no matching hits: NO_RESULTS. No local matches and NoOp provider: NO_LIVE_SEARCH. A nonempty authorized provider can still return RESULTS_FROM_PROVIDER.
 - Local URLs are relative /demo/documents/{id}, served as UTF-8 plain text. Each document explicitly states that it is fictional. External demo URLs are unnecessary.
 - SearchResult.source = LOCAL_DEMO identifies these fixtures. Category describes fixture purpose, not professional accreditation or actual streaming availability.
 

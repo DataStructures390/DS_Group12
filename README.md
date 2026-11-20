@@ -195,14 +195,14 @@ PTT、Dcard、Wikipedia、TMDB、Rotten Tomatoes、豆瓣與官方串流服務�
 
 ## 7. 進度看板
 
-**最後文件更新：2026-11-17。此表只紀錄已驗證的工作，不能把計畫當作完工。以下成果在功能分支上，尚未合併 main。**
+**最後文件更新：2026-11-20。此表只紀錄已驗證的工作，不能把計畫當作完工。以下成果在功能分支上，尚未合併 main。**
 
 | Item | Status | Evidence |
 |:--|:--|:--|
 | 專題主題與十項方向 | 完成 | [PROJECT_SPEC](docs/PROJECT_SPEC.md) |
 | 多語言需求與搜尋規則 | 完成規劃 | [PROJECT_SPEC](docs/PROJECT_SPEC.md) |
 | 開發及測試分期 | 完成規劃 | [ROADMAP](docs/ROADMAP.md) |
-| Java/Maven 基礎架構 | 完成：本機 clean verify 194 個測試通過（2026-11-19） | [pom.xml](pom.xml)、[src](src) |
+| Java/Maven 基礎架構 | 完成：本機 clean verify 196 個測試通過（2026-11-20） | [pom.xml](pom.xml)、[src](src) |
 | 本地 Inverted Index、URL 去重、PriorityQueue 排名 | 完成並有自動測試 | [ALGORITHM_VALIDATION](docs/ALGORITHM_VALIDATION.md) |
 | SQLite 與 3 部人工核對多語影集 | 完成 | [CURATED_COLLECTION](docs/CURATED_COLLECTION.md) |
 | TMDB 影集資訊區 | 完成：Breaking Bad 即時辨識已實測 | [TMDB_LIVE_RUNBOOK](docs/TMDB_LIVE_RUNBOOK.md) |
