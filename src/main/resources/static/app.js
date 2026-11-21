@@ -3,6 +3,7 @@ const status = document.querySelector('#status');
 const results = document.querySelector('#results');
 const input = document.querySelector('#q');
 const labels = { COMMUNITY_DISCUSSION: '網友討論', SERIES_INFORMATION: '影集資訊', PROFESSIONAL_REVIEW: '專業影評', STREAMING_PLATFORM: '觀看平台' };
+const NO_MATCH_STATUSES = new Set(['NO_RESULTS', 'NO_LIVE_SEARCH']);
 let category = '';
 let activeRequest;
 let collectionExamples = [];
@@ -106,6 +107,12 @@ async function search(query = input.value.trim(), refreshMetadata = true) {
     const data = await response.json();
     if (activeRequest !== request) return;
     render(data.results);
+    // Only plain "nothing matched" statuses get example/category hints; rejected or
+    // ambiguous queries and an expired catalog are not fixed by switching category.
+    if (!data.results.length && !NO_MATCH_STATUSES.has(data.status)) {
+      status.textContent = data.message;
+      return;
+    }
     status.textContent = `${data.results.length} 筆結果。${data.message}`;
     if (!data.results.length && category) {
       const reset = element('button', '查看全部分類');
