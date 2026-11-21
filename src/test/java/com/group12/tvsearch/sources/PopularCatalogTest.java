@@ -128,6 +128,52 @@ class PopularCatalogTest {
         assertEquals(2, resolver.resolve("Display 2").orElseThrow().id());
     }
 
+    /** Test clock that can be moved forward while a provider built from the store keeps running. */
+    private static final class MovableClock extends Clock {
+        private Instant now;
+        MovableClock(Instant start) { now = start; }
+        void set(Instant instant) { now = instant; }
+        @Override public Instant instant() { return now; }
+        @Override public ZoneId getZone() { return ZoneOffset.UTC; }
+        @Override public Clock withZone(ZoneId zone) { return this; }
+    }
+
+    @Test void cacheThatExpiresWhileRunningStopsSearchCollectionExamplesAndMetadata() throws Exception {
+        var clock = new MovableClock(NOW.instant());
+        var store = new PopularCatalogStore(temporary.resolve("catalog.sqlite"), 1, true, clock);
+        store.addPage(new TmdbCatalogSource.Page(1, 1, List.of(1L)));
+        store.finish(1, Optional.of(basic(1)));
+        var provider = new PopularSearchProvider(store);
+        var controller = new CollectionController(Optional.empty(), Optional.of(provider), false);
+        var resolver = new VerifiedSeriesResolver(new TmdbClient() {
+            public Optional<Series> resolveSeries(String q) { fail("Expired cache must not fall back to title search"); return Optional.empty(); }
+            public Optional<Series> resolveSeriesById(long id) { return Optional.of(basic(id).series()); }
+        }, Optional.of(provider));
+
+        // One second before the six-month expiry the cache is still usable.
+        clock.set(Instant.parse("2027-05-06T23:59:59Z"));
+        assertTrue(provider.fresh());
+        assertEquals("TMDB_CATALOG_RESULTS", provider.search("Synthetic 1", 10, null).status());
+        assertEquals(List.of("Synthetic 1"), controller.info().examples());
+        assertEquals(1, resolver.resolve("Synthetic 1").orElseThrow().id());
+
+        // At the expiry instant (inclusive) every path refuses stale data instead of serving it.
+        clock.set(Instant.parse("2027-05-07T00:00:00Z"));
+        assertFalse(provider.fresh());
+        var expired = provider.search("Synthetic 1", 10, null);
+        assertEquals("CATALOG_EXPIRED", expired.status());
+        assertTrue(expired.results().isEmpty());
+        assertTrue(provider.candidates("Synthetic 1").isEmpty());
+        var info = controller.info();
+        assertEquals("popular", info.collection());
+        assertTrue(info.examples().isEmpty());
+        assertTrue(info.message().contains("過期"));
+        assertTrue(resolver.resolve("Synthetic 1").isEmpty());
+        var service = new DefaultSearchService((q, limit) -> { fail("Expired cache must not fall back to web"); return List.of(); },
+            new QueryProcessor(), new ResultMerger(), new RankingAlgorithm(), null, Optional.empty(), Optional.of(provider));
+        assertEquals("CATALOG_EXPIRED", service.search("Synthetic 1", 10).status());
+    }
+
     @Test void springPopularModeBuildsFromAnExistingCache() throws Exception {
         var store = store(1);
         store.addPage(new TmdbCatalogSource.Page(1, 1, List.of(1L)));

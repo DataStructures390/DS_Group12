@@ -35,6 +35,10 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 
 ## Next commands
 
+### 2026-11-21 nightly test (popular cache expiry)
+
+- P2-01 / P2-02: added a regression test for a popular-500 cache that expires while the server is already running (previously only the startup refusal was tested). Using a synthetic one-series store and a movable test clock, it checks that one second before the six-month expiry search, collection examples and metadata still work, and that at the expiry instant `/api/search` returns `CATALOG_EXPIRED`, `/api/collection` drops the examples and shows the expiry message, and the metadata resolver returns nothing without falling back to a TMDB title search or the web provider. Test-only change; no behavior changed. 197 local tests pass (`clean verify`).
+
 ### 2026-11-21 nightly fix
 
 - P3-05: the search page status line now shows only the server message for zero-result statuses that are not "nothing matched" (QUERY_TOO_LONG, EMPTY_QUERY, AMBIGUOUS_SERIES, CATALOG_EXPIRED). Previously it prefixed "0 筆結果。" and appended "try these examples / switch category" hints plus a "查看全部分類" button, which cannot fix an ambiguous name or an expired catalog. NO_RESULTS and NO_LIVE_SEARCH keep the hints. 196 local tests pass (`clean verify`); there are no automated JS tests and this change was NOT browser-verified (preview server not started in the nightly run).
