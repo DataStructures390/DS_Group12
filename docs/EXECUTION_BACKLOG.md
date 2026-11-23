@@ -35,6 +35,10 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 
 ## Next commands
 
+### 2026-11-23 nightly fix (origin country order)
+
+- P2-02: in popular mode the metadata panel compared the cached TMDB `origin_country` with the live one as an exact string, so a co-production whose countries TMDB returns in a different order (cached `GB,US`, live `US,GB`) was shown as UNCONFIRMED. The check now compares the two country lists as sets: order no longer matters, but a dropped, added or different country is still not confirmed. Regression test uses a synthetic one-series store and a stub TMDB client (no network). The curated three-series path already used a membership check and is unchanged. 198 local tests pass (`clean verify`). Not checked against live TMDB (no credentials in the nightly run).
+
 ### 2026-11-21 nightly test (popular cache expiry)
 
 - P2-01 / P2-02: added a regression test for a popular-500 cache that expires while the server is already running (previously only the startup refusal was tested). Using a synthetic one-series store and a movable test clock, it checks that one second before the six-month expiry search, collection examples and metadata still work, and that at the expiry instant `/api/search` returns `CATALOG_EXPIRED`, `/api/collection` drops the examples and shows the expiry message, and the metadata resolver returns nothing without falling back to a TMDB title search or the web provider. Test-only change; no behavior changed. 197 local tests pass (`clean verify`).

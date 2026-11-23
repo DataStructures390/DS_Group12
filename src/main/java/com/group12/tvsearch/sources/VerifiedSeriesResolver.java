@@ -61,6 +61,15 @@ public class VerifiedSeriesResolver {
         aliases.computeIfAbsent(processor.normalize(title), ignored -> new HashSet<>()).add(localId);
     }
 
+    /**
+     * TMDB origin_country is a list whose order is not part of the identity; the cached and
+     * live lists must contain exactly the same countries, in any order.
+     */
+    static boolean sameCountries(String live, String cached) {
+        return new HashSet<>(Arrays.asList(live.split(",", -1)))
+                .equals(new HashSet<>(Arrays.asList(cached.split(",", -1))));
+    }
+
     public Optional<Series> resolve(String query) {
         String normalized = processor.normalize(query);
         if (normalized.isBlank()) return Optional.empty();
@@ -73,7 +82,7 @@ public class VerifiedSeriesResolver {
                 return client.resolveSeriesById(expected.id()).filter(series ->
                     series.id() == expected.id()
                     && processor.normalize(series.originalTitle()).equals(processor.normalize(expected.originalTitle()))
-                    && series.originCountry().equals(expected.originCountry()));
+                    && sameCountries(series.originCountry(), expected.originCountry()));
             }
         }
         var candidates = aliases.get(normalized);

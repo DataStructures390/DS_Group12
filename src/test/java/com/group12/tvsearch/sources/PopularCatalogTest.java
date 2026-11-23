@@ -128,6 +128,32 @@ class PopularCatalogTest {
         assertEquals(2, resolver.resolve("Display 2").orElseThrow().id());
     }
 
+    @Test void liveMetadataAcceptsReorderedOriginCountriesButNotChangedOnes() throws Exception {
+        // Synthetic co-production cached with origin_country "GB,US".
+        var store = store(1);
+        store.addPage(new TmdbCatalogSource.Page(1, 1, List.of(1L)));
+        store.finish(1, Optional.of(new TmdbCatalogSource.Basic(
+            new Series(1, "Synthetic Coproduction", "GB,US", "tmdb:tv:1"), "Synthetic Coproduction", "en", "2020-01-01")));
+        var provider = new PopularSearchProvider(store);
+        String[] live = {"US,GB"};
+        var resolver = new VerifiedSeriesResolver(new TmdbClient() {
+            public Optional<Series> resolveSeries(String q) { fail("Do not title-search a cached identity"); return Optional.empty(); }
+            public Optional<Series> resolveSeriesById(long id) {
+                return Optional.of(new Series(id, "Synthetic Coproduction", live[0], "tmdb:tv:" + id));
+            }
+        }, Optional.of(provider));
+
+        // TMDB returning the same countries in another order is still the same identity.
+        assertEquals(1, resolver.resolve("Synthetic Coproduction").orElseThrow().id());
+        // A dropped, added or different country is not confirmed.
+        for (String changed : List.of("US", "GB,US,CA", "GB,FR", "")) {
+            live[0] = changed;
+            assertTrue(resolver.resolve("Synthetic Coproduction").isEmpty(), changed);
+        }
+        assertFalse(VerifiedSeriesResolver.sameCountries("", "US"));
+        assertTrue(VerifiedSeriesResolver.sameCountries("", ""));
+    }
+
     /** Test clock that can be moved forward while a provider built from the store keeps running. */
     private static final class MovableClock extends Clock {
         private Instant now;
