@@ -36,7 +36,10 @@ public class CuratedSearchProvider {
             return new ScoredSearchResult(new SearchResult(r.url(), r.title(), r.snippet(), "CURATED_LOCAL", r.category(),
                 r.keywordRelevance(), r.seriesRelevance(), r.sourceRelevance(), r.freshness()), row.score());
         }).toList();
-        return new SearchResponse(query, results.isEmpty() ? response.status() : "CURATED_LOCAL_RESULTS",
-            "人工整理的本地資料集：真實影集與已核對 Wikipedia 連結；不是即時網頁搜尋。只有影集資訊分類。", results);
+        String description = "人工整理的本地資料集：真實影集與已核對 Wikipedia 連結；不是即時網頁搜尋。只有影集資訊分類。";
+        if (results.isEmpty()) // keep the index's explanation for AMBIGUOUS_SERIES and similar statuses
+            return new SearchResponse(query, response.status(),
+                "NO_RESULTS".equals(response.status()) ? description : response.message(), results);
+        return new SearchResponse(query, "CURATED_LOCAL_RESULTS", description, results);
     }
 }

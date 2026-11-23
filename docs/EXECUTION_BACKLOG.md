@@ -35,6 +35,10 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 
 ## Next commands
 
+### 2026-11-23 nightly fix (ambiguous series message)
+
+- P2-01 / P3-05: in popular (and curated) mode, a name that matches more than one stored series correctly returned `AMBIGUOUS_SERIES` with no results, but the provider replaced the index's explanation with the generic catalog description. Since the search page shows only the server message for this status, the user saw "TMDB 熱門候選中…500 部影集基本資料…" with no hint why nothing came back. The providers now keep the index message for every empty non-`NO_RESULTS` status; `NO_RESULTS` and successful searches still carry the catalog description. Regression test uses a synthetic two-series store sharing one title (fails on the previous code). The curated path got the same one-line change but has no test of its own because its checked three-series catalog has no shared names. 199 local tests pass (`clean verify`). Not browser-verified in the nightly run.
+
 ### 2026-11-23 nightly fix (origin country order)
 
 - P2-02: in popular mode the metadata panel compared the cached TMDB `origin_country` with the live one as an exact string, so a co-production whose countries TMDB returns in a different order (cached `GB,US`, live `US,GB`) was shown as UNCONFIRMED. The check now compares the two country lists as sets: order no longer matters, but a dropped, added or different country is still not confirmed. Regression test uses a synthetic one-series store and a stub TMDB client (no network). The curated three-series path already used a membership check and is unchanged. 198 local tests pass (`clean verify`). Not checked against live TMDB (no credentials in the nightly run).

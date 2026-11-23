@@ -68,6 +68,12 @@ public class PopularSearchProvider {
             return new ScoredSearchResult(new SearchResult(s.url(), s.title(), s.snippet(), "TMDB_CATALOG", s.category(),
                 s.keywordRelevance(), s.seriesRelevance(), s.sourceRelevance(), s.freshness()), row.score());
         }).toList();
-        return new SearchResponse(query, rows.isEmpty() ? response.status() : "TMDB_CATALOG_RESULTS", description(), rows);
+        if (rows.isEmpty()) {
+            // Keep the index's own explanation for non-match statuses such as AMBIGUOUS_SERIES;
+            // the catalog description does not tell the user why nothing was returned.
+            return new SearchResponse(query, response.status(),
+                "NO_RESULTS".equals(response.status()) ? description() : response.message(), rows);
+        }
+        return new SearchResponse(query, "TMDB_CATALOG_RESULTS", description(), rows);
     }
 }

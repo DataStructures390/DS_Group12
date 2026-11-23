@@ -154,6 +154,29 @@ class PopularCatalogTest {
         assertTrue(VerifiedSeriesResolver.sameCountries("", ""));
     }
 
+    @Test void ambiguousTitleKeepsItsExplanationInsteadOfTheCatalogDescription() throws Exception {
+        // Two synthetic series that share one original title (e.g. a remake under the same name).
+        var store = store(2);
+        store.addPage(new TmdbCatalogSource.Page(1, 1, List.of(1L, 2L)));
+        for (long id : List.of(1L, 2L)) store.finish(id, Optional.of(new TmdbCatalogSource.Basic(
+            new Series(id, "Shared Synthetic Title", "DE", "tmdb:tv:" + id), "Display " + id, "de", "2020-01-01")));
+        var provider = new PopularSearchProvider(store);
+
+        var ambiguous = provider.search("Shared Synthetic Title", 10, null);
+        assertEquals("AMBIGUOUS_SERIES", ambiguous.status());
+        assertTrue(ambiguous.results().isEmpty());
+        assertNotEquals(provider.description(), ambiguous.message());
+        assertTrue(ambiguous.message().contains("多個"), ambiguous.message());
+
+        // A plain miss still carries the catalog description, and a hit is unchanged.
+        var miss = provider.search("zzzz-no-such-series", 10, null);
+        assertEquals("NO_RESULTS", miss.status());
+        assertEquals(provider.description(), miss.message());
+        var hit = provider.search("Display 2", 10, null);
+        assertEquals("TMDB_CATALOG_RESULTS", hit.status());
+        assertEquals(provider.description(), hit.message());
+    }
+
     /** Test clock that can be moved forward while a provider built from the store keeps running. */
     private static final class MovableClock extends Clock {
         private Instant now;
