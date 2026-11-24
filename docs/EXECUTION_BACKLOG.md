@@ -35,6 +35,10 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 
 ## Next commands
 
+### 2026-11-24 nightly fix (blank query reset)
+
+- P3-05: submitting a search box that holds only spaces passes the browser's `required` check. The page then showed "請輸入影集名稱或關鍵字。" but left the previous series panel on screen (and any in-flight metadata request running), and clicking a category tab silently re-ran the previous query. Before the first search the status line is hidden, so there was no feedback at all. A blank submit now clears the previous query, aborts and hides the series panel, empties the box and asks the browser to point at it (`reportValidity`). Front-end only; there are no automated JS tests, and this change was NOT browser-verified (the preview server was not started in the nightly run). 199 local tests pass (`clean verify`), unchanged by this edit.
+
 ### 2026-11-23 nightly fix (ambiguous series message)
 
 - P2-01 / P3-05: in popular (and curated) mode, a name that matches more than one stored series correctly returned `AMBIGUOUS_SERIES` with no results, but the provider replaced the index's explanation with the generic catalog description. Since the search page shows only the server message for this status, the user saw "TMDB 熱門候選中…500 部影集基本資料…" with no hint why nothing came back. The providers now keep the index message for every empty non-`NO_RESULTS` status; `NO_RESULTS` and successful searches still carry the catalog description. Regression test uses a synthetic two-series store sharing one title (fails on the previous code). The curated path got the same one-line change but has no test of its own because its checked three-series catalog has no shared names. 199 local tests pass (`clean verify`). Not browser-verified in the nightly run.

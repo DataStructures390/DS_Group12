@@ -93,7 +93,23 @@ async function search(query = input.value.trim(), refreshMetadata = true) {
   const request = new AbortController();
   activeRequest = request;
   results.replaceChildren();
-  if (!query) { status.textContent = '請輸入影集名稱或關鍵字。'; results.setAttribute('aria-busy', 'false'); return; }
+  if (!query) {
+    // A whitespace-only submit passes the `required` check. Clear the previous search too,
+    // so the old series panel does not linger and category tabs do not re-run the old query.
+    submittedQuery = '';
+    metadataRequest?.abort();
+    metadataRequest = undefined;
+    const panel = document.querySelector('#series-info');
+    panel.replaceChildren();
+    panel.hidden = true;
+    panel.setAttribute('aria-busy', 'false');
+    status.textContent = '請輸入影集名稱或關鍵字。';
+    results.setAttribute('aria-busy', 'false');
+    // Before the first search the status line is hidden, so let the browser point at the box.
+    input.value = '';
+    input.reportValidity();
+    return;
+  }
   submittedQuery = query;
   document.body.classList.add('has-searched');
   if (refreshMetadata) loadSeries(query);
