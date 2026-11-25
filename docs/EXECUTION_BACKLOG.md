@@ -35,6 +35,10 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 
 ## Next commands
 
+### 2026-11-25 nightly test (collection examples)
+
+- P1-06 / P3-05: `/api/collection` supplies the "試試：" example buttons, but its default local-demo mode and its demo-disabled mode had no tests (only the Brave fixture, curated and popular modes did). Added two tests: in the default mode the endpoint reports `demo` with exactly 港灣燈火 / Midnight Garden / 山間列車, and each advertised example really returns `LOCAL_DEMO_RESULTS` with 4 results; with `search.local-demo.enabled=false` and no web provider it reports `disabled`, the message 「本地示範已關閉。尚未接上即時網頁搜尋。」 and no examples, so the page never suggests a title that can only return NO_LIVE_SEARCH. Test-only change; no behavior changed. 201 local tests pass (`clean verify`).
+
 ### 2026-11-24 nightly fix (blank query reset)
 
 - P3-05: submitting a search box that holds only spaces passes the browser's `required` check. The page then showed "請輸入影集名稱或關鍵字。" but left the previous series panel on screen (and any in-flight metadata request running), and clicking a category tab silently re-ran the previous query. Before the first search the status line is hidden, so there was no feedback at all. A blank submit now clears the previous query, aborts and hides the series panel, empties the box and asks the browser to point at it (`reportValidity`). Front-end only; there are no automated JS tests, and this change was NOT browser-verified (the preview server was not started in the nightly run). 199 local tests pass (`clean verify`), unchanged by this edit.

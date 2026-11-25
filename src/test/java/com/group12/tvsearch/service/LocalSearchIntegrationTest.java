@@ -60,6 +60,23 @@ class LocalSearchIntegrationTest {
             .andExpect(jsonPath("$.results.length()").value(0));
     }
 
+    @Test void collectionExamplesAreTheDemoTitlesAndEachOneFindsResults() throws Exception {
+        // The page turns these into "試試：" buttons; each one must lead to actual results.
+        mvc.perform(get("/api/collection"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.collection").value("demo"))
+            .andExpect(jsonPath("$.message", org.hamcrest.Matchers.containsString("12 筆自寫虛構文件")))
+            .andExpect(jsonPath("$.message", org.hamcrest.Matchers.containsString("尚未接上即時網頁搜尋")))
+            .andExpect(jsonPath("$.examples.length()").value(3))
+            .andExpect(jsonPath("$.examples[0]").value("港灣燈火"))
+            .andExpect(jsonPath("$.examples[1]").value("Midnight Garden"))
+            .andExpect(jsonPath("$.examples[2]").value("山間列車"));
+        for (String example : new String[]{"港灣燈火", "Midnight Garden", "山間列車"}) {
+            mvc.perform(get("/api/search").param("q", example))
+                .andExpect(jsonPath("$.status").value("LOCAL_DEMO_RESULTS"))
+                .andExpect(jsonPath("$.results.length()").value(4));
+        }
+    }
+
     @Test void localLinksResolveAndDoNotPretendToBeRealWebsites() throws Exception {
         assertEquals(12, repository.findAll().size());
         for (var doc : repository.findAll()) {
