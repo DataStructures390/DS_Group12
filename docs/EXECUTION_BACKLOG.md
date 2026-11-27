@@ -35,6 +35,10 @@ All owners remain **unassigned**; Codex implemented changes without assigning te
 
 ## Next commands
 
+### 2026-11-27 nightly test (search parameters)
+
+- P1-07: LOCAL_SEARCH_CONTRACT.md promises that `/api/search` clamps `limit` to 1–50 in the controller, defaults to 10, treats an omitted category as All and rejects unknown categories / non-integer limits with HTTP 400, but only the service-level clamp and two 400 cases were tested. Added `SearchControllerTest` (15 cases) against a recording service, no index or network: default call is `("", 10, All)`; 0, -5 and `Integer.MIN_VALUE` become 1, 51 and `Integer.MAX_VALUE` become 50; an empty `category=` means All; the exact enum name is passed through; `abc`, `1.5`, `2147483648`, lower-case `professional_review` and `UNKNOWN` return 400 without calling the service. Test-only change; no behavior changed. 216 local tests pass (`clean verify`).
+
 ### 2026-11-25 nightly test (collection examples)
 
 - P1-06 / P3-05: `/api/collection` supplies the "試試：" example buttons, but its default local-demo mode and its demo-disabled mode had no tests (only the Brave fixture, curated and popular modes did). Added two tests: in the default mode the endpoint reports `demo` with exactly 港灣燈火 / Midnight Garden / 山間列車, and each advertised example really returns `LOCAL_DEMO_RESULTS` with 4 results; with `search.local-demo.enabled=false` and no web provider it reports `disabled`, the message 「本地示範已關閉。尚未接上即時網頁搜尋。」 and no examples, so the page never suggests a title that can only return NO_LIVE_SEARCH. Test-only change; no behavior changed. 201 local tests pass (`clean verify`).
